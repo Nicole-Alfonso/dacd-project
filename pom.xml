@@ -11,7 +11,7 @@
 
     <modules>
         <module>transit-feeder</module>
-        <module>places-feeder</module>
+        <module>hotels-feeder</module>
         <module>sql-database</module>
     </modules>
 
