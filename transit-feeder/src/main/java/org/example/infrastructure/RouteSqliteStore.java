@@ -1,15 +1,26 @@
-package org.example;
+package org.example.infrastructure;
+
+import org.example.application.RouteStore;
+import org.example.domain.model.Route;
 
 import java.sql.*;
 
-public class DatabaseManager {
+public class RouteSqliteStore implements RouteStore {
     private static final String URL = "jdbc:sqlite:openrouteservice.db";
 
+    public RouteSqliteStore() {
+        createTable();
+    }
+
+    @Override
+    public void save(Route route) {
+//TODO
+    }
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
     }
 
-    public static void createTable() {
+    public  void createTable() {
         String sqlCreateTable = """
             CREATE TABLE IF NOT EXISTS api_responses (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +50,7 @@ public class DatabaseManager {
         }
     }
 
-    public static boolean isDuplicate(Connection connection, String coordinates) throws SQLException {
+    public boolean isDuplicate(Connection connection, String coordinates) throws SQLException {
         String sqlCheck = "SELECT COUNT(*) FROM api_responses WHERE coordinates = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sqlCheck)) {
             stmt.setString(1, coordinates);

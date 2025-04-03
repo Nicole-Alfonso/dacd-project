@@ -1,19 +1,32 @@
 package org.example;
 
+import org.example.application.RouteProvider;
+import org.example.application.RouteStore;
+import org.example.infrastructure.OpenRouteServiceProvider;
+import org.example.infrastructure.RouteSqliteStore;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class OpenRouteServiceController {
-    public static void run(String apiKey) {
-        DatabaseManager.createTable();
+    private final RouteProvider provider;
+    private final RouteStore store;
+
+    public OpenRouteServiceController(RouteProvider provider, RouteStore store) {
+        this.provider = provider;
+        this.store = store;
+    }
+
+    public void run(String apiKey) {
+        RouteSqliteStore.createTable();
 
         try {
-            String jsonResponse = OpenRouteServiceCall.getRouteData(apiKey);
+            String jsonResponse = OpenRouteServiceProvider.getRouteData(apiKey);
             String coordinates = extractCoordinates(jsonResponse); // Extrae coordenadas como texto
 
-            try (Connection dbConnection = DatabaseManager.getConnection()) {
-                if (!DatabaseManager.isDuplicate(dbConnection, coordinates)) {
-                    DatabaseManager.insertApiResponse(dbConnection, jsonResponse, coordinates);
+            try (Connection dbConnection = RouteSqliteStore.getConnection()) {
+                if (!RouteSqliteStore.isDuplicate(dbConnection, coordinates)) {
+                    RouteSqliteStore.insertApiResponse(dbConnection, jsonResponse, coordinates);
                     System.out.println("Datos insertados correctamente.");
                 } else {
                     System.out.println("Los datos ya existen en la base de datos.");
