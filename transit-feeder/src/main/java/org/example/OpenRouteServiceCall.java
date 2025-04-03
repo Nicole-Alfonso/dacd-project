@@ -5,27 +5,15 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 
 public class OpenRouteServiceCall {
+    private static final String ENDPOINT = "https://api.openrouteservice.org/v2/directions/driving-car?"
+            + "&start=2.294351,48.858844&end=2.349902,48.852968";
 
-    public static void main(String[] args) {
-        String apiKey = args[0];
-
-        String start = "2.294351,48.858844";
-        String end = "2.349902,48.852968";
-
-        RoutesDatabase.createTable();
-
-        try {
-            OpenRouteServiceClient client = new OpenRouteServiceClient();
-
-            String jsonResponse = client.getRouteData(apiKey, start, end);
-
-            RoutesProcessor processor = new RoutesProcessor();
-            Route route = processor.parseRouteData(jsonResponse);
-
-            // Guardar la ruta en la base de datos
-            RoutesDatabase.saveRoute(route);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static String getRouteData(String apiKey) throws IOException {
+        return Jsoup.connect(ENDPOINT)
+                .ignoreContentType(true)
+                .header("Authorization", apiKey)
+                .method(Connection.Method.GET)
+                .execute()
+                .body();
     }
 }
