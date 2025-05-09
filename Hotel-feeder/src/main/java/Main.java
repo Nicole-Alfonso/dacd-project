@@ -1,3 +1,4 @@
+
 import application.HotelProvider;
 import application.HotelStore;
 import infrastructure.HotelSqliteStore;
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         String dbUrl = "jdbc:sqlite:hotels.db";
-        String provinceApiKey = "Sevilla";
+        String provinceApiKey = "sevilla";  // ahora sí es de Andalucía
 
         HotelProvider provider = new XoteloProvider();
         HotelStore store = new HotelSqliteStore(dbUrl);

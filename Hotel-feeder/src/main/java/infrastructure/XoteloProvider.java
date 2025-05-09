@@ -16,12 +16,12 @@ public class XoteloProvider implements HotelProvider {
     private final OkHttpClient client = new OkHttpClient();
 
     @Override
-    public List<HotelData> fetchHotels(String cityName) {
+    public List<HotelData> fetchHotels(String provinceName) {
         List<HotelData> hotels = new ArrayList<>();
 
-        String locationKey = Ciudades.CIUDADES.get(cityName);
+        String locationKey = Ciudades.CIUDADES.get(provinceName);
         if (locationKey == null) {
-            System.err.println("Provincia no válida: " + cityName);
+            System.err.println("Provincia no válida: " + provinceName);
             return hotels;
         }
 
@@ -50,7 +50,7 @@ public class XoteloProvider implements HotelProvider {
                 String id = hotel.getString("id");
                 String name = hotel.optString("name", "Hotel sin nombre");
                 String address = hotel.optString("address", "Dirección desconocida");
-                String city = hotel.optString("city", cityName);
+                String city = hotel.optString("city", provinceName);
                 double rating = hotel.optDouble("rating", 0.0);
                 double lat = hotel.optDouble("lat", 0.0);
                 double lon = hotel.optDouble("lon", 0.0);
