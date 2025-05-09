@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>Hotel-feeder</module>
+        <module>Events-feeder</module>
     </modules>
 
     <properties>
