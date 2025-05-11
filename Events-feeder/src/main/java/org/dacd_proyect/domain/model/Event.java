@@ -1,16 +1,14 @@
 package org.dacd_proyect.domain.model;
 
-import java.time.LocalDateTime;
-
 public class Event {
     private final String id;
     private final String name;
     private final String location;
-    private final LocalDateTime date;
+    private final String date;
     private final String url;
     private final String latlong;
 
-    public Event(String id, String name, String location, LocalDateTime date, String url, String latlong) {
+    public Event(String id, String name, String location, String date, String url, String latlong) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -31,7 +29,7 @@ public class Event {
         return location;
     }
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -43,6 +41,3 @@ public class Event {
         return latlong;
     }
 }
-
-
-

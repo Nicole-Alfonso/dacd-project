@@ -4,7 +4,10 @@ import org.dacd_proyect.application.EventProvider;
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 
+import com.google.gson.Gson;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import java.util.List;
+import javax.jms.*;
 
 public class TicketmasterController {
     private final EventProvider provider;
@@ -15,30 +18,38 @@ public class TicketmasterController {
         this.store = store;
     }
 
-    public void run(String location, String date) {
+    public void fetchSaveAndPublish(String location, String date) {
+        List<Event> events = provider.fetchEvents(location, date);
+        Gson gson = new Gson();
+
         try {
-            // Fetch events from Ticketmaster
-            List<Event> events = provider.fetchEvents(location, date);
+            ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+            Connection connection = factory.createConnection();
+            connection.start();
 
-            // Only save non-duplicate events
-            List<Event> existingEvents = store.getAllEvents();
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = session.createTopic("TicketmasterEvents");
+            MessageProducer producer = session.createProducer(destination);
+
             for (Event event : events) {
-                boolean isDuplicate = existingEvents.stream()
-                        .anyMatch(e -> e.getId().equals(event.getId()));
+                store.saveEvent(event);
 
-                if (!isDuplicate) {
-                    store.saveEvents(List.of(event));
-                    System.out.println("Evento guardado: " + event.getName() + " en " + event.getLocation());
-                } else {
-                    System.out.println("Evento duplicado (no guardado): " + event.getName() + " en " + event.getLocation());
-                }
+                String json = gson.toJson(event);
+                TextMessage message = session.createTextMessage(json);
+                producer.send(message);
             }
 
-            System.out.println("Eventos procesados correctamente.");
+            session.close();
+            connection.close();
 
-        } catch (Exception e) {
-            System.err.println("Error al procesar eventos: " + e.getMessage());
-            e.printStackTrace();
+        } catch (JMSException e) {
+            System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());
         }
     }
 }
+
+
+
+
+
+

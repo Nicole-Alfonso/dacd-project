@@ -1,81 +1,90 @@
 package org.dacd_proyect.infrastructure;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.dacd_proyect.application.EventProvider;
+import org.dacd_proyect.domain.model.Event;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import okhttp3.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.*;
 
-public class TicketmasterProvider {
 
+public class TicketmasterProvider implements EventProvider {
+
+    private final OkHttpClient client = new OkHttpClient();
     private final String apiKey;
 
     public TicketmasterProvider(String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public void fetchAndPrintEvents(String location, String date) {
-        try {
-            // Construir la URL real para la API de Ticketmaster con la clave API, ubicación y fecha
-            String url = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=" + apiKey + "&city=" + location + "&date=" + date;
+    @Override
+    public List<Event> fetchEvents(String location, String date) {
+        List<Event> events = new ArrayList<>();
 
-            // Llamar al método que hace la solicitud HTTP real
-            String jsonResponse = getJsonResponseFromApi(url);
+        String url = "https://app.ticketmaster.com/discovery/v2/events.json" +
+                "?apikey=" + apiKey +
+                "&countryCode=ES" +
+                "&city=" + location +
+                "&startDateTime=" + date + "T00:00:00Z" +
+                "&endDateTime=" + date + "T23:59:59Z" +
+                "&size=20";
 
-            // Imprimir el JSON completo
-            System.out.println("Respuesta JSON de la API: " + jsonResponse);
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-            // Parsear y mostrar los detalles de los eventos
-            printEventDetails(jsonResponse);
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                System.err.println("Error en respuesta de Ticketmaster: " + response.code());
+                return events;
+            }
 
-        } catch (Exception e) {
-            System.err.println("Error al obtener eventos de la API: " + e.getMessage());
-            e.printStackTrace();
+            String jsonData = response.body().string();
+            JSONObject jsonObject = new JSONObject(jsonData);
+
+            if (!jsonObject.has("_embedded")) {
+                System.err.println("No se encontraron eventos para " + location + " en la fecha " + date);
+                return events;
+            }
+
+            JSONArray eventArray = jsonObject
+                    .getJSONObject("_embedded")
+                    .getJSONArray("events");
+
+            for (int i = 0; i < eventArray.length(); i++) {
+                JSONObject eventJson = eventArray.getJSONObject(i);
+
+                String id = eventJson.getString("id");
+                String name = eventJson.optString("name", "Evento sin nombre");
+                String urlEvent = eventJson.optString("url", "URL desconocida");
+
+                JSONObject venue = eventJson
+                        .getJSONObject("_embedded")
+                        .getJSONArray("venues")
+                        .getJSONObject(0);
+
+                String venueName = venue.optString("name", "Lugar desconocido");
+                String lat = venue.optJSONObject("location").optString("latitude", "0.0");
+                String lon = venue.optJSONObject("location").optString("longitude", "0.0");
+                String latlong = lat + "," + lon;
+
+                // Usa el campo 'startDateTime' como String
+                String eventDate = eventJson
+                        .getJSONObject("dates")
+                        .getJSONObject("start")
+                        .optString("localDate", "Fecha desconocida");
+
+                Event event = new Event(id, name, venueName, eventDate, urlEvent, latlong);
+                events.add(event);
+            }
+
+        } catch (IOException | JSONException e) {
+            System.err.println("Error al procesar eventos de Ticketmaster: " + e.getMessage());
         }
-    }
 
-    private String getJsonResponseFromApi(String urlString) throws Exception {
-        // Crear la URL y la conexión
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
-
-        // Leer la respuesta
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        // Retornar la respuesta JSON como un String
-        return response.toString();
-    }
-
-    private void printEventDetails(String jsonResponse) {
-        // Convertir la respuesta JSON a un objeto JSONObject
-        JSONObject jsonObject = new JSONObject(jsonResponse);
-
-        // Extraer el array de eventos
-        JSONArray eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
-
-        // Iterar sobre los eventos y mostrar sus detalles
-        for (int i = 0; i < eventsArray.length(); i++) {
-            JSONObject eventJson = eventsArray.getJSONObject(i);
-            String id = eventJson.getString("id");
-            String name = eventJson.getString("name");
-            String location = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getString("city");
-            String date = eventJson.getJSONObject("dates").getJSONObject("start").getString("localDate");
-
-            // Imprimir los detalles del evento
-            System.out.println("Evento ID: " + id + ", Nombre: " + name + ", Ubicación: " + location + ", Fecha: " + date);
-        }
+        return events;
     }
 }
 
