@@ -1,5 +1,7 @@
 package domain.model;
 
+import org.example.shared.PriceOffer;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,6 +9,7 @@ public class HotelData {
     private final String id;
     private final String name;
     private final String city;
+    private final String province;
     private final String address;
     private final double rating;
     private final double latitude;
@@ -14,10 +17,11 @@ public class HotelData {
     private final List<PriceOffer> priceOffers;
     private final LocalDateTime timestamp;
 
-    public HotelData(String id, String name, String city, String address, double rating, double latitude, double longitude, List<PriceOffer> priceOffers) {
+    public HotelData(String id, String name, String city, String province, String address, double rating, double latitude, double longitude, List<PriceOffer> priceOffers) {
         this.id = id;
         this.name = name;
         this.city = city;
+        this.province = province;
         this.address = address;
         this.rating = rating;
         this.latitude = latitude;
@@ -30,6 +34,7 @@ public class HotelData {
     public String getId() { return id; }
     public String getName() { return name; }
     public String getCity() { return city; }
+    public String getProvince() { return province; }
     public String getAddress() { return address; }
     public double getRating() { return rating; }
     public double getLatitude() { return latitude; }
@@ -42,7 +47,7 @@ public class HotelData {
         StringBuilder sb = new StringBuilder();
         sb.append("Hotel: ").append(name).append("\n");
         sb.append("Address: ").append(address).append("\n");
-        sb.append("Province: ").append(city).append("\n");
+        sb.append("City: ").append(city).append("\n");
         sb.append("Price Offers:\n");
 
         for (PriceOffer offer : priceOffers) {
@@ -51,4 +56,5 @@ public class HotelData {
 
         return sb.toString();
     }
+
 }

@@ -2,7 +2,7 @@ package infrastructure;
 
 import application.HotelStore;
 import domain.model.HotelData;
-import domain.model.PriceOffer;
+import org.example.shared.PriceOffer;
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;

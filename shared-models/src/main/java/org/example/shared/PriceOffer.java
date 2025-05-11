@@ -1,4 +1,4 @@
-package domain.model;
+package org.example.shared;
 
 public class PriceOffer {
     private final String provider;
