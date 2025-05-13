@@ -1,70 +1,106 @@
 package infrastructure;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import application.HotelProvider;
+import com.google.gson.*;
 import domain.model.HotelData;
 import org.example.shared.PriceOffer;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class XoteloProvider implements HotelProvider {
 
-    private final OkHttpClient client = new OkHttpClient();
+    private static final String BASE_HOTELS_URL = "https://data.xotelo.com/api/list?";
+    private static final String BASE_OFFERS_URL = "https://data.xotelo.com/api/rates?";
 
     @Override
-    public List<HotelData> fetchHotels(String city) {
-        List<HotelData> hotels = new ArrayList<>();
+    public List<HotelData> fetchHotels(String cityKey) {
+        List<HotelData> hotelDataList = new ArrayList<>();
+        try {
+            // Llamada a la API de hoteles
+            String hotelsUrl = BASE_HOTELS_URL + "city_key=" + cityKey + "&offset=0&limit=20";
+            JsonArray hotels = getJsonArrayFromUrl(hotelsUrl, "result", "list");
 
-        String cityKey = domain.model.Ciudades.getKey(city); // city == nombreProvincia
-        if (cityKey == null) {
-            System.err.println("No se encontró clave para la ciudad: " + city);
-            return hotels;
-        }
+            for (JsonElement element : hotels) {
+                JsonObject hotelJson = element.getAsJsonObject();
 
-        String url = "https://data.xotelo.com/api/list?location_key="+cityKey+"&offset=0&limit=20";
-        Request request = new Request.Builder().url(url).build();
+                String id = hotelJson.get("key").getAsString();
+                String name = hotelJson.get("name").getAsString();
+                double rating = hotelJson.getAsJsonObject("review_summary").get("rating").getAsDouble();
+                double lat = hotelJson.getAsJsonObject("geo").get("latitude").getAsDouble();
+                double lon = hotelJson.getAsJsonObject("geo").get("longitude").getAsDouble();
+                String city = cityKey;  // Aquí podrías usar el cityKey como identificador
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.err.println("Error al llamar a Xotelo: " + response.code());
-                return hotels;
+                // Llamada a la API de ofertas
+                List<PriceOffer> offers = fetchOffers(id);
+
+                // Crear objeto HotelData
+                HotelData hotel = new HotelData(id, name, city, rating, lat, lon, offers);
+                hotelDataList.add(hotel);
             }
 
-            String jsonData = response.body().string();
-            JSONObject jsonObject = new JSONObject(jsonData);
-            JSONArray jsonHotels = jsonObject.getJSONObject("result").getJSONArray("list");
-
-            for (int i = 0; i < jsonHotels.length(); i++) {
-                JSONObject h = jsonHotels.getJSONObject(i);
-
-                String id = h.optString("key", "no-id");
-                String name = h.optString("name", "Hotel sin nombre");
-                double rating = h.optJSONObject("review_summary") != null
-                        ? h.optJSONObject("review_summary").optDouble("rating", 0.0)
-                        : 0.0;
-                double lat = h.optJSONObject("geo") != null ? h.getJSONObject("geo").optDouble("latitude", 0.0) : 0.0;
-                double lon = h.optJSONObject("geo") != null ? h.getJSONObject("geo").optDouble("longitude", 0.0) : 0.0;
-                double price = h.optJSONObject("price_ranges") != null
-                        ? h.getJSONObject("price_ranges").optDouble("minimum", 0.0)
-                        : 0.0;
-
-                List<PriceOffer> offers = List.of(new PriceOffer("Xotelo", price, "EUR"));
-
-                HotelData hotelData = new HotelData(id, name, city, rating, lat, lon, offers);
-
-                hotels.add(hotelData);
-            }
-
-        } catch (IOException e) {
-            System.err.println("Error conectando con Xotelo: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error al obtener hoteles: " + e.getMessage());
         }
 
-        return hotels;
+        return hotelDataList;
+    }
+
+    private List<PriceOffer> fetchOffers(String hotelKey) {
+        List<PriceOffer> offers = new ArrayList<>();
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate checkout = today.plusDays(3);
+
+            String url = BASE_OFFERS_URL +
+                    "hotel_key=" + hotelKey +
+                    "&chk_in=" + today +
+                    "&chk_out=" + checkout;
+
+            JsonArray rates = getJsonArrayFromUrl(url, "result", "rates");
+            String currency = getJsonObjectFromUrl(url, "result").get("currency").getAsString();
+
+            for (JsonElement rateElement : rates) {
+                JsonObject rate = rateElement.getAsJsonObject();
+                String provider = rate.get("name").getAsString();
+                double price = rate.get("rate").getAsDouble();
+
+                offers.add(new PriceOffer(provider, price, currency));
+            }
+        } catch (Exception e) {
+            System.err.println("Error al obtener ofertas para hotel " + hotelKey + ": " + e.getMessage());
+        }
+        return offers;
+    }
+
+    // Utilidades para parseo JSON
+    private JsonArray getJsonArrayFromUrl(String urlStr, String... path) throws Exception {
+        JsonObject json = getJsonFromUrl(urlStr);
+        for (int i = 0; i < path.length - 1; i++) {
+            json = json.getAsJsonObject(path[i]);
+        }
+        return json.getAsJsonArray(path[path.length - 1]);
+    }
+
+    private JsonObject getJsonObjectFromUrl(String urlStr, String... path) throws Exception {
+        JsonObject json = getJsonFromUrl(urlStr);
+        for (String key : path) {
+            json = json.getAsJsonObject(key);
+        }
+        return json;
+    }
+
+    private JsonObject getJsonFromUrl(String urlStr) throws Exception {
+        URL url = new URL(urlStr);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+            return JsonParser.parseReader(reader).getAsJsonObject();
+        }
     }
 }
