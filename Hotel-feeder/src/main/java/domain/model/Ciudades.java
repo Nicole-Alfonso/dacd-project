@@ -16,4 +16,8 @@ public class Ciudades {
         CIUDADES.put("Huelva", "g187442");
         CIUDADES.put("Almería", "g187429");
     }
+
+    public static String getKey(String nombreProvincia) {
+        return CIUDADES.get(nombreProvincia);
+    }
 }
