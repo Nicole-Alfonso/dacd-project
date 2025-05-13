@@ -2,6 +2,7 @@ import application.HotelProvider;
 import application.HotelStore;
 import infrastructure.HotelSqliteStore;
 import infrastructure.XoteloProvider;
+import domain.model.Ciudades;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,7 +11,15 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         String dbUrl = "jdbc:sqlite:hotels.db";
-        String provinceName = "Sevilla";  // Puedes cambiar o iterar sobre Ciudades.CIUDADES
+        String provinceName = "Sevilla";  // Cambia esto para probar otras provincias
+
+        // Obtener la clave API de la provincia
+        String provinceKey = Ciudades.CIUDADES.get(provinceName);
+
+        if (provinceKey == null) {
+            System.err.println("Clave API no encontrada para la provincia: " + provinceName);
+            return;
+        }
 
         HotelProvider provider = new XoteloProvider();
         HotelStore store = new HotelSqliteStore(dbUrl);
@@ -21,7 +30,7 @@ public class Main {
 
         Runnable task = () -> {
             System.out.println("Fetching and publishing hotels for: " + provinceName);
-            controller.fetchSaveAndPublish(provinceName);
+            controller.fetchSaveAndPublish(provinceKey);
         };
 
         // Ejecutar inmediatamente y luego cada 1 hora
