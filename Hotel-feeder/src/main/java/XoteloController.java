@@ -1,3 +1,4 @@
+// XoteloController.java
 import com.google.gson.Gson;
 import domain.model.HotelData;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -18,8 +19,8 @@ public class XoteloController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String provinceApiKey) {
-        List<HotelData> hotels = provider.fetchHotels(provinceApiKey);
+    public void fetchSaveAndPublish(String cityApiKey) {
+        List<HotelData> hotels = provider.fetchHotels(cityApiKey);
         Gson gson = new Gson();
 
         try {
@@ -35,14 +36,12 @@ public class XoteloController {
                 // 1. Guardar en SQLite
                 store.saveHotel(hotel);
 
-                // 2. Crear y publicar evento
+                // 2. Crear y publicar evento (sin address ni province)
                 HotelEvent event = new HotelEvent(
                         "Xotelo",
                         hotel.getId(),
                         hotel.getName(),
-                        hotel.getAddress(),
                         hotel.getCity(),
-                        hotel.getProvince(),         // ¡Asegúrate de tener este getter!
                         hotel.getRating(),
                         hotel.getLatitude(),
                         hotel.getLongitude(),

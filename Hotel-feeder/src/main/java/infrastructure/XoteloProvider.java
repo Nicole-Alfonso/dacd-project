@@ -18,11 +18,16 @@ public class XoteloProvider implements HotelProvider {
     private final OkHttpClient client = new OkHttpClient();
 
     @Override
-    public List<HotelData> fetchHotels(String provinceKey) {
+    public List<HotelData> fetchHotels(String city) {
         List<HotelData> hotels = new ArrayList<>();
 
-        String url = "https://data.xotelo.com/api/list?location_key=" + provinceKey + "&offset=0&limit=20";
+        String provinceKey = domain.model.Ciudades.getKey(city); // city == nombreProvincia
+        if (provinceKey == null) {
+            System.err.println("No se encontró clave para la ciudad: " + city);
+            return hotels;
+        }
 
+        String url = "https://data.xotelo.com/api/list?location_key=" + provinceKey + "&offset=0&limit=20";
         Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -33,27 +38,25 @@ public class XoteloProvider implements HotelProvider {
 
             String jsonData = response.body().string();
             JSONObject jsonObject = new JSONObject(jsonData);
-            JSONArray jsonHotels = jsonObject.getJSONArray("hotels");
+            JSONArray jsonHotels = jsonObject.getJSONObject("result").getJSONArray("list");
 
             for (int i = 0; i < jsonHotels.length(); i++) {
                 JSONObject h = jsonHotels.getJSONObject(i);
 
-                String id = h.optString("id", "no-id");
+                String id = h.optString("key", "no-id");
                 String name = h.optString("name", "Hotel sin nombre");
-                String address = h.optString("address", "Desconocido");
-                String city = h.optString("city", "Desconocida");
-                String province = h.optString("province", "Desconocida");
-                double rating = h.optDouble("rating", 0.0);
-                double lat = h.optDouble("lat", 0.0);
-                double lon = h.optDouble("lon", 0.0);
-                double price = h.optDouble("price", 0.0);
-                String currency = h.optString("currency", "EUR");
+                double rating = h.optJSONObject("review_summary") != null
+                        ? h.optJSONObject("review_summary").optDouble("rating", 0.0)
+                        : 0.0;
+                double lat = h.optJSONObject("geo") != null ? h.getJSONObject("geo").optDouble("latitude", 0.0) : 0.0;
+                double lon = h.optJSONObject("geo") != null ? h.getJSONObject("geo").optDouble("longitude", 0.0) : 0.0;
+                double price = h.optJSONObject("price_ranges") != null
+                        ? h.getJSONObject("price_ranges").optDouble("minimum", 0.0)
+                        : 0.0;
 
-                List<PriceOffer> offers = List.of(new PriceOffer("Xotelo", price, currency));
+                List<PriceOffer> offers = List.of(new PriceOffer("Xotelo", price, "EUR"));
 
-                HotelData hotelData = new HotelData(
-                        id, name, city, province, address, rating, lat, lon, offers
-                );
+                HotelData hotelData = new HotelData(id, name, city, rating, lat, lon, offers);
 
                 hotels.add(hotelData);
             }
