@@ -21,13 +21,13 @@ public class XoteloProvider implements HotelProvider {
     public List<HotelData> fetchHotels(String city) {
         List<HotelData> hotels = new ArrayList<>();
 
-        String provinceKey = domain.model.Ciudades.getKey(city); // city == nombreProvincia
-        if (provinceKey == null) {
+        String cityKey = domain.model.Ciudades.getKey(city); // city == nombreProvincia
+        if (cityKey == null) {
             System.err.println("No se encontró clave para la ciudad: " + city);
             return hotels;
         }
 
-        String url = "https://data.xotelo.com/api/list?location_key=" + provinceKey + "&offset=0&limit=20";
+        String url = "https://data.xotelo.com/api/list?location_key=" + cityKey + "&offset=0&limit=20";
         Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {

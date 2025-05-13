@@ -14,10 +14,8 @@ public class HotelEvent {
     public double lon;
     public List<PriceOffer> priceOffers;
 
-    // Constructor estándar (necesario para Gson)
     public HotelEvent() {}
 
-    // Constructor manual (si lo usas desde feeder)
     public HotelEvent(String ss, String id, String name, String city,
                       double rating, double lat, double lon, List<PriceOffer> priceOffers) {
         this.ts = Instant.now();

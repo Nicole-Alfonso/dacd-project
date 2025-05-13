@@ -1,4 +1,3 @@
-// Main.java
 import application.HotelProvider;
 import application.HotelStore;
 import infrastructure.HotelSqliteStore;
@@ -12,12 +11,12 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         String dbUrl = "jdbc:sqlite:hotels.db";
-        String cityName = "Sevilla";
+        String cityName = "Sevilla";  // Nombre visible para el usuario
 
         // Obtener la clave API de la ciudad
-        String cityKey = Ciudades.CIUDADES.get(cityName);
+        String cityApiKey = Ciudades.getKey(cityName);
 
-        if (cityKey == null) {
+        if (cityApiKey == null) {
             System.err.println("Clave API no encontrada para la ciudad: " + cityName);
             return;
         }
@@ -31,13 +30,12 @@ public class Main {
 
         Runnable task = () -> {
             System.out.println("Fetching and publishing hotels for: " + cityName);
-            controller.fetchSaveAndPublish(cityKey);
+            controller.fetchSaveAndPublish(cityApiKey);
         };
 
-        // Ejecutar inmediatamente y luego cada 1 hora
         scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
 
-        // Shutdown hook para detener correctamente
+        // Apagado limpio del scheduler
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Apagando el scheduler...");
             scheduler.shutdown();
