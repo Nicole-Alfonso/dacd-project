@@ -27,7 +27,7 @@ public class XoteloProvider implements HotelProvider {
             return hotels;
         }
 
-        String url = "https://data.xotelo.com/api/list?location_key=" + cityKey + "&offset=0&limit=20";
+        String url = "https://data.xotelo.com/api/list?location_key="+cityKey+"&offset=0&limit=20";
         Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
