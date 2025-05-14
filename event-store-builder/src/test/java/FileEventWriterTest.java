@@ -1,4 +1,4 @@
-import org.example.eventstore.FileEventWriter;
+import org.eventstore.FileEventWriter;
 import org.example.shared.HotelEvent;
 import org.example.shared.PriceOffer;
 import org.junit.jupiter.api.Test;

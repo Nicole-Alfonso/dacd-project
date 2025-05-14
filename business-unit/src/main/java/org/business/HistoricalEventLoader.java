@@ -1,4 +1,4 @@
-package org.example.business;
+package org.business;
 
 import com.google.gson.Gson;
 import org.example.shared.HotelEvent;

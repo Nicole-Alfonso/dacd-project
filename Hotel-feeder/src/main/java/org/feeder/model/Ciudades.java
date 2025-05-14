@@ -1,4 +1,4 @@
-package domain.model;
+package org.feeder.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,4 +16,18 @@ public class Ciudades {
         CIUDADES.put("Huelva", "g187442");
         CIUDADES.put("Almería", "g187429");
     }
+
+    public static String getKey(String nombreCiudad) {
+        return CIUDADES.get(nombreCiudad);
+    }
+
+    public static String getNombreCiudadPorKey(String apiKey) {
+        for (Map.Entry<String, String> entry : CIUDADES.entrySet()) {
+            if (entry.getValue().equals(apiKey)) {
+                return entry.getKey(); // Devuelve "Sevilla" si apiKey == "g187443"
+            }
+        }
+        return null; // No encontrada
+    }
+
 }
