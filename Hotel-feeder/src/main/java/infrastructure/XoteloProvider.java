@@ -28,18 +28,32 @@ public class XoteloProvider implements HotelProvider {
             for (JsonElement element : hotels) {
                 JsonObject hotelJson = element.getAsJsonObject();
 
-                // Comprobación de valores nulos con un método de ayuda
                 String id = getJsonElementAsString(hotelJson, "key");
                 String name = getJsonElementAsString(hotelJson, "name");
-                double rating = getJsonElementAsDouble(hotelJson, "review_summary", "rating");
-                double lat = getJsonElementAsDouble(hotelJson, "geo", "latitude");
-                double lon = getJsonElementAsDouble(hotelJson, "geo", "longitude");
-                String city = cityKey;  // Aquí podrías usar el cityKey como identificador
 
-                // Llamada a la API de ofertas
+                // Ajuste para rating dentro de un array review_summary
+                JsonArray reviewArray = hotelJson.has("review_summary") && hotelJson.get("review_summary").isJsonArray()
+                        ? hotelJson.getAsJsonArray("review_summary")
+                        : new JsonArray();
+                double rating = (reviewArray.size() > 1 && reviewArray.get(1).isJsonPrimitive())
+                        ? reviewArray.get(1).getAsDouble()
+                        : 0.0;
+
+                // Ajuste para geo como array
+                JsonArray geoArray = hotelJson.has("geo") && hotelJson.get("geo").isJsonArray()
+                        ? hotelJson.getAsJsonArray("geo")
+                        : new JsonArray();
+                double lat = (geoArray.size() > 0 && geoArray.get(0).isJsonPrimitive())
+                        ? geoArray.get(0).getAsDouble()
+                        : 0.0;
+                double lon = (geoArray.size() > 1 && geoArray.get(1).isJsonPrimitive())
+                        ? geoArray.get(1).getAsDouble()
+                        : 0.0;
+
+                String city = cityKey;
+
                 List<PriceOffer> offers = fetchOffers(id);
 
-                // Crear objeto HotelData
                 HotelData hotel = new HotelData(id, name, city, rating, lat, lon, offers);
                 hotelDataList.add(hotel);
             }
@@ -82,15 +96,17 @@ public class XoteloProvider implements HotelProvider {
     private JsonArray getJsonArrayFromUrl(String urlStr, String... path) throws Exception {
         JsonObject json = getJsonFromUrl(urlStr);
         for (int i = 0; i < path.length - 1; i++) {
-            json = getJsonObjectSafe(json, path[i]);  // Nueva verificación
+            json = getJsonObjectSafe(json, path[i]);
         }
-        return json.has(path[path.length - 1]) && json.get(path[path.length - 1]).isJsonArray() ? json.getAsJsonArray(path[path.length - 1]) : new JsonArray();  // Comprobación adicional
+        return json.has(path[path.length - 1]) && json.get(path[path.length - 1]).isJsonArray()
+                ? json.getAsJsonArray(path[path.length - 1])
+                : new JsonArray();
     }
 
     private JsonObject getJsonObjectFromUrl(String urlStr, String... path) throws Exception {
         JsonObject json = getJsonFromUrl(urlStr);
         for (String key : path) {
-            json = getJsonObjectSafe(json, key);  // Nueva verificación
+            json = getJsonObjectSafe(json, key);
         }
         return json;
     }
@@ -105,22 +121,20 @@ public class XoteloProvider implements HotelProvider {
         }
     }
 
-    // Nueva función para devolver un JsonObject seguro, evitando NullPointerException
     private JsonObject getJsonObjectSafe(JsonObject json, String key) {
         JsonElement element = json.get(key);
-        if (element != null && !element.isJsonNull()) {
+        if (element != null && !element.isJsonNull() && element.isJsonObject()) {
             return element.getAsJsonObject();
         }
-        return new JsonObject();  // Devuelve un JsonObject vacío si el valor es nulo o no existe
+        return new JsonObject();
     }
 
-    // Métodos de ayuda para manejar valores nulos de forma segura
     private String getJsonElementAsString(JsonObject jsonObject, String key) {
         JsonElement element = jsonObject.get(key);
         if (element != null && !element.isJsonNull()) {
             return element.getAsString();
         }
-        return ""; // Retorna una cadena vacía si el valor es nulo o no existe
+        return "";
     }
 
     private double getJsonElementAsDouble(JsonObject jsonObject, String key) {
@@ -128,7 +142,7 @@ public class XoteloProvider implements HotelProvider {
         if (element != null && !element.isJsonNull()) {
             return element.getAsDouble();
         }
-        return 0.0; // Retorna 0.0 si el valor es nulo o no existe
+        return 0.0;
     }
 
     private double getJsonElementAsDouble(JsonObject jsonObject, String parentKey, String childKey) {
@@ -136,6 +150,6 @@ public class XoteloProvider implements HotelProvider {
         if (parentObject != null && !parentObject.isJsonNull()) {
             return getJsonElementAsDouble(parentObject, childKey);
         }
-        return 0.0; // Retorna 0.0 si el valor es nulo o no existe
+        return 0.0;
     }
 }
