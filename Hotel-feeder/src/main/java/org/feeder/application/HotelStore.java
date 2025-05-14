@@ -1,6 +1,6 @@
-package application;
+package org.feeder.application;
 
-import domain.model.HotelData;
+import org.feeder.model.HotelData;
 
 public interface HotelStore {
     void saveHotel(HotelData hotelData);

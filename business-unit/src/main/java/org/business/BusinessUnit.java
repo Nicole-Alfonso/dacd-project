@@ -1,4 +1,4 @@
-package org.example.business;
+package org.business;
 
 import org.example.shared.HotelEvent;
 

@@ -1,4 +1,4 @@
-package org.example.business;
+package org.business;
 
 public class BusinessLauncher {
     public static void main(String[] args) {

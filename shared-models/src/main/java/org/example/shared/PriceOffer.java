@@ -11,9 +11,9 @@ public class PriceOffer {
         this.currency = currency;
     }
 
-    public String getProvider() {return provider; }
-    public double getPrice() {return price; }
-    public String getCurrency() {return currency; }
+    public String getProvider() { return provider; }
+    public double getPrice() { return price; }
+    public String getCurrency() { return currency; }
 
     @Override
     public String toString() {

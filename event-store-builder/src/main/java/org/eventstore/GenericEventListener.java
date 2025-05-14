@@ -1,4 +1,4 @@
-package org.example.eventstore;
+package org.eventstore;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;

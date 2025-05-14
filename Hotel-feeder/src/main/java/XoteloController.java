@@ -1,8 +1,8 @@
 import com.google.gson.Gson;
-import domain.model.HotelData;
+import org.feeder.model.HotelData;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import application.HotelProvider;
-import application.HotelStore;
+import org.feeder.application.HotelProvider;
+import org.feeder.application.HotelStore;
 import org.example.shared.HotelEvent;
 
 import javax.jms.*;
@@ -18,8 +18,8 @@ public class XoteloController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String provinceApiKey) {
-        List<HotelData> hotels = provider.fetchHotels(provinceApiKey);
+    public void fetchSaveAndPublish(String cityApiKey, String cityName) {
+        List<HotelData> hotels = provider.fetchHotels(cityApiKey);
         Gson gson = new Gson();
 
         try {
@@ -32,7 +32,7 @@ public class XoteloController {
             MessageProducer producer = session.createProducer(destination);
 
             for (HotelData hotel : hotels) {
-                // 1. Guardar en SQLite
+                // 1. Guardar en la base de datos
                 store.saveHotel(hotel);
 
                 // 2. Crear y publicar evento
@@ -40,9 +40,7 @@ public class XoteloController {
                         "Xotelo",
                         hotel.getId(),
                         hotel.getName(),
-                        hotel.getAddress(),
                         hotel.getCity(),
-                        hotel.getProvince(),         // ¡Asegúrate de tener este getter!
                         hotel.getRating(),
                         hotel.getLatitude(),
                         hotel.getLongitude(),
