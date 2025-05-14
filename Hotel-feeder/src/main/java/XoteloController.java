@@ -1,8 +1,8 @@
 import com.google.gson.Gson;
-import domain.model.HotelData;
+import org.feeder.model.HotelData;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import application.HotelProvider;
-import application.HotelStore;
+import org.feeder.application.HotelProvider;
+import org.feeder.application.HotelStore;
 import org.example.shared.HotelEvent;
 
 import javax.jms.*;

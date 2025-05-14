@@ -1,4 +1,4 @@
-package org.example.eventstore;
+package org.eventstore;
 
 public class BuilderLauncher {
     public static void main(String[] args) {

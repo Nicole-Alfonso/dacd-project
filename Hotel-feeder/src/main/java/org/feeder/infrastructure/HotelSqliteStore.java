@@ -1,7 +1,7 @@
-package infrastructure;
+package org.feeder.infrastructure;
 
-import application.HotelStore;
-import domain.model.HotelData;
+import org.feeder.application.HotelStore;
+import org.feeder.model.HotelData;
 import org.example.shared.PriceOffer;
 import java.sql.Connection;
 import java.sql.DriverManager;

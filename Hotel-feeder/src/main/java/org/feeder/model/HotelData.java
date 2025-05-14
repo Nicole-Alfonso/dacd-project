@@ -1,4 +1,4 @@
-package domain.model;
+package org.feeder.model;
 
 import org.example.shared.PriceOffer;
 

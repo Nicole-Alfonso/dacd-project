@@ -1,8 +1,8 @@
-package infrastructure;
+package org.feeder.infrastructure;
 
-import application.HotelProvider;
+import org.feeder.application.HotelProvider;
 import com.google.gson.*;
-import domain.model.HotelData;
+import org.feeder.model.HotelData;
 import org.example.shared.PriceOffer;
 
 import java.io.InputStreamReader;

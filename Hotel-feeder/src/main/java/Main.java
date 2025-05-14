@@ -1,8 +1,8 @@
-import application.HotelProvider;
-import application.HotelStore;
-import domain.model.Ciudades;
-import infrastructure.HotelSqliteStore;
-import infrastructure.XoteloProvider;
+import org.feeder.application.HotelProvider;
+import org.feeder.application.HotelStore;
+import org.feeder.model.Ciudades;
+import org.feeder.infrastructure.HotelSqliteStore;
+import org.feeder.infrastructure.XoteloProvider;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

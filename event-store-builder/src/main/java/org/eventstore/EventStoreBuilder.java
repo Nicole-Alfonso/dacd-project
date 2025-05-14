@@ -1,4 +1,4 @@
-package org.example.eventstore;
+package org.eventstore;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 

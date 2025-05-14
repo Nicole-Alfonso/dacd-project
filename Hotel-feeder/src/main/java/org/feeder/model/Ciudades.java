@@ -1,4 +1,4 @@
-package domain.model;
+package org.feeder.model;
 
 import java.util.HashMap;
 import java.util.Map;
