@@ -2,7 +2,8 @@ package org.business;
 
 import com.google.gson.Gson;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.example.shared.HotelEvent;
+import org.shared.HotelEvent;
+import org.shared.EventInfo;
 
 import javax.jms.*;
 
@@ -16,19 +17,39 @@ public class EventSubscriber {
             connection.start();
 
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            Topic topic = session.createTopic("HotelPrice");
-            MessageConsumer consumer = session.createDurableSubscriber(topic, "BusinessSub");
+
+            // Suscribirse a eventos de hoteles
+            Topic hotelTopic = session.createTopic("HotelPrice");
+            MessageConsumer hotelConsumer = session.createDurableSubscriber(hotelTopic, "BusinessSub-Hotel");
+
+            // Suscribirse a eventos de Ticketmaster
+            Topic eventTopic = session.createTopic("TicketmasterEvents");
+            MessageConsumer eventConsumer = session.createDurableSubscriber(eventTopic, "BusinessSub-Event");
 
             Gson gson = new Gson();
 
-            consumer.setMessageListener(message -> {
+            // Listener para hoteles
+            hotelConsumer.setMessageListener(message -> {
                 if (message instanceof TextMessage text) {
                     try {
                         HotelEvent event = gson.fromJson(text.getText(), HotelEvent.class);
                         datamart.addEvent(event);
-                        System.out.println("Evento recibido (realtime): " + event.name);
+                        System.out.println("Hotel recibido: " + event.name);
                     } catch (Exception e) {
-                        System.err.println("Error al procesar mensaje: " + e.getMessage());
+                        System.err.println("Error procesando HotelEvent: " + e.getMessage());
+                    }
+                }
+            });
+
+            // Listener para eventos
+            eventConsumer.setMessageListener(message -> {
+                if (message instanceof TextMessage text) {
+                    try {
+                        EventInfo event = gson.fromJson(text.getText(), EventInfo.class);
+                        datamart.addEvent(event);
+                        System.out.println("Evento recibido: " + event.name);
+                    } catch (Exception e) {
+                        System.err.println("Error procesando EventInfo: " + e.getMessage());
                     }
                 }
             });

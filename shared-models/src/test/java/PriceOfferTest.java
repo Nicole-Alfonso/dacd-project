@@ -1,4 +1,4 @@
-import org.example.shared.PriceOffer;
+import org.shared.PriceOffer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

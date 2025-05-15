@@ -1,11 +1,13 @@
 package org.business;
 
-import org.example.shared.HotelEvent;
+import org.shared.EventInfo;
+import org.shared.HotelEvent;
 
 import java.util.*;
 
 public class Datamart {
     private final Map<String, List<HotelEvent>> hotelesPorCiudad = new HashMap<>();
+    private final List<EventInfo> eventos = new ArrayList<>();
 
     public synchronized void addEvent(HotelEvent event) {
         hotelesPorCiudad
@@ -35,12 +37,12 @@ public class Datamart {
                 .toList();
     }
 
-    /*public synchronized void addEvent(EventInfo event) {
+    public synchronized void addEvent(EventInfo event) {
         eventos.add(event);
     }
 
     public List<EventInfo> getEventos() {
         return eventos;
-    } */
+    }
 
 }

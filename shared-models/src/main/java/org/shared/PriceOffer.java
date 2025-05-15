@@ -1,4 +1,4 @@
-package org.example.shared;
+package org.shared;
 
 public class PriceOffer {
     private final String provider;

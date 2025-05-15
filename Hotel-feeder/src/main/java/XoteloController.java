@@ -3,7 +3,7 @@ import org.feeder.model.HotelData;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.feeder.application.HotelProvider;
 import org.feeder.application.HotelStore;
-import org.example.shared.HotelEvent;
+import org.shared.HotelEvent;
 
 import javax.jms.*;
 import java.util.List;

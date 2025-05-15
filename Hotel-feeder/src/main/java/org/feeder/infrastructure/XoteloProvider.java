@@ -3,7 +3,7 @@ package org.feeder.infrastructure;
 import org.feeder.application.HotelProvider;
 import com.google.gson.*;
 import org.feeder.model.HotelData;
-import org.example.shared.PriceOffer;
+import org.shared.PriceOffer;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;

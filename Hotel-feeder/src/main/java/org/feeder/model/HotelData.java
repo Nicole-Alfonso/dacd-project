@@ -1,6 +1,6 @@
 package org.feeder.model;
 
-import org.example.shared.PriceOffer;
+import org.shared.PriceOffer;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -2,7 +2,7 @@ package org.feeder.infrastructure;
 
 import org.feeder.application.HotelStore;
 import org.feeder.model.HotelData;
-import org.example.shared.PriceOffer;
+import org.shared.PriceOffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;

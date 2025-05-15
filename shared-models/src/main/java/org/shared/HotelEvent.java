@@ -1,4 +1,4 @@
-package org.example.shared;
+package org.shared;
 
 import java.time.Instant;
 import java.util.List;
