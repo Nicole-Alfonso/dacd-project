@@ -1,12 +1,11 @@
 package org.business;
 
 import org.example.shared.HotelEvent;
+
 import java.util.*;
 
 public class Datamart {
     private final Map<String, List<HotelEvent>> hotelesPorCiudad = new HashMap<>();
-    // private final List<EventInfo> eventos = new ArrayList<>();   --> Hay que poner un EventInfo en shared-modules
-
 
     public synchronized void addEvent(HotelEvent event) {
         hotelesPorCiudad
@@ -26,6 +25,13 @@ public class Datamart {
                 .stream()
                 .sorted(Comparator.comparingDouble(h -> -h.rating))
                 .limit(topN)
+                .toList();
+    }
+
+    public List<HotelEvent> getHotelsByCategory(String city, String category) {
+        return hotelesPorCiudad.getOrDefault(city, Collections.emptyList())
+                .stream()
+                .filter(h -> h.category != null && h.category.equalsIgnoreCase(category))
                 .toList();
     }
 

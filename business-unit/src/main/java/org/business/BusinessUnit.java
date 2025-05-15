@@ -20,6 +20,10 @@ public class BusinessUnit {
         return datamart.getTopRated(provincia, topN);
     }
 
+    public List<HotelEvent> getHotelesPorCategoria(String provincia, String categoria) {
+        return datamart.getHotelsByCategory(provincia, categoria);
+    }
+
     /*public List<HotelEvent> getHotelesParaEvento(String eventName, double maxPrice) {
         return datamart.getEventos().stream()
                 .filter(e -> e.name.toLowerCase().contains(eventName.toLowerCase()))
