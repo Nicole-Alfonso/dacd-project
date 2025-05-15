@@ -26,7 +26,10 @@ public class HotelSqliteStore implements HotelStore {
                     city TEXT,
                     rating REAL,
                     latitude REAL,
-                    longitude REAL
+                    longitude REAL,
+                    min_price REAL,
+                    max_price REAL,
+                    category TEXT
                 );
                 """;
 
@@ -53,9 +56,10 @@ public class HotelSqliteStore implements HotelStore {
         try (Connection conn = DriverManager.getConnection(dbUrl)) {
             // Insertar hotel
             String insertHotel = """
-                INSERT OR REPLACE INTO hotels (id, name, city, rating, latitude, longitude)
-                VALUES (?, ?, ?, ?, ?, ?);
+                INSERT OR REPLACE INTO hotels (id, name, city, rating, latitude, longitude, min_price, max_price, category)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """;
+
 
             try (PreparedStatement stmt = conn.prepareStatement(insertHotel)) {
                 stmt.setString(1, hotel.getId());
@@ -64,8 +68,12 @@ public class HotelSqliteStore implements HotelStore {
                 stmt.setDouble(4, hotel.getRating());
                 stmt.setDouble(5, hotel.getLatitude());
                 stmt.setDouble(6, hotel.getLongitude());
+                stmt.setDouble(7, hotel.getMinPrice());
+                stmt.setDouble(8, hotel.getMaxPrice());
+                stmt.setString(9, hotel.getCategory().name());
                 stmt.executeUpdate();
             }
+
 
             // Insertar ofertas
             String insertOffer = """

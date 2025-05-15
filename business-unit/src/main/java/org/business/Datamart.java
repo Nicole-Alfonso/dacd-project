@@ -1,6 +1,7 @@
 package org.business;
 
 import org.example.shared.HotelEvent;
+
 import java.util.*;
 
 public class Datamart {
@@ -26,4 +27,20 @@ public class Datamart {
                 .limit(topN)
                 .toList();
     }
+
+    public List<HotelEvent> getHotelsByCategory(String city, String category) {
+        return hotelesPorCiudad.getOrDefault(city, Collections.emptyList())
+                .stream()
+                .filter(h -> h.category != null && h.category.equalsIgnoreCase(category))
+                .toList();
+    }
+
+    /*public synchronized void addEvent(EventInfo event) {
+        eventos.add(event);
+    }
+
+    public List<EventInfo> getEventos() {
+        return eventos;
+    } */
+
 }

@@ -82,15 +82,18 @@ public class XoteloProvider implements HotelProvider {
             for (JsonElement rateElement : rates) {
                 JsonObject rate = rateElement.getAsJsonObject();
                 String provider = getJsonElementAsString(rate, "name");
-                double price = getJsonElementAsDouble(rate, "rate");
+                double base = getJsonElementAsDouble(rate, "rate");
+                double tax = getJsonElementAsDouble(rate, "tax");
+                double finalPrice = base + tax;
 
-                offers.add(new PriceOffer(provider, price, currency));
+                offers.add(new PriceOffer(provider, finalPrice, currency));
             }
         } catch (Exception e) {
             System.err.println("Error al obtener ofertas para hotel " + hotelKey + ": " + e.getMessage());
         }
         return offers;
     }
+
 
     // Utilidades para parseo JSON con verificación de valores nulos
     private JsonArray getJsonArrayFromUrl(String urlStr, String... path) throws Exception {
