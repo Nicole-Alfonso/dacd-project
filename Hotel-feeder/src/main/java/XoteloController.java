@@ -44,6 +44,9 @@ public class XoteloController {
                         hotel.getRating(),
                         hotel.getLatitude(),
                         hotel.getLongitude(),
+                        hotel.getMinPrice(),
+                        hotel.getMaxPrice(),
+                        hotel.getCategory().name(),
                         hotel.getPriceOffers()
                 );
 

@@ -1,4 +1,6 @@
-package org.eventstore;
+package org.eventstore.listener;
+
+import org.eventstore.writer.EventWriter;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;

@@ -20,4 +20,3 @@ public class PriceOffer {
         return String.format("%s: %.2f %s", provider, price, currency);
     }
 }
-

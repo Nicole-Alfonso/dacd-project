@@ -1,4 +1,6 @@
-package org.eventstore;
+package org.eventstore.launcher;
+
+import org.eventstore.core.EventStoreBuilder;
 
 public class BuilderLauncher {
     public static void main(String[] args) {

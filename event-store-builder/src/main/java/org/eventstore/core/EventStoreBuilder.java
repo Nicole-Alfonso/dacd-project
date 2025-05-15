@@ -1,6 +1,9 @@
-package org.eventstore;
+package org.eventstore.core;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.eventstore.listener.GenericEventListener;
+import org.eventstore.writer.EventWriter;
+import org.eventstore.writer.FileEventWriter;
 
 import javax.jms.*;
 
@@ -16,7 +19,7 @@ public class EventStoreBuilder {
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             // Añade aquí los topics que quieres escuchar
-            String[] topics = {"HotelPrice", "Weather"};
+            String[] topics = {"HotelPrice", "EventInfo"};
 
             EventWriter writer = new FileEventWriter();
 
