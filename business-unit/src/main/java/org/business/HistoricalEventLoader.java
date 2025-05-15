@@ -23,7 +23,12 @@ public class HistoricalEventLoader {
                             while ((line = reader.readLine()) != null) {
                                 HotelEvent event = gson.fromJson(line, HotelEvent.class);
                                 datamart.addEvent(event);
-                            }
+                            } /*else if (file.toString().contains("EventInfo")) {
+                                    EventInfo event = gson.fromJson(line, EventInfo.class);
+                                    datamart.addEvent(event);
+                                }
+                            } */
+
                             System.out.println("Cargado: " + file);
                         } catch (Exception e) {
                             System.err.println("Error al leer archivo: " + file + ": " + e.getMessage());

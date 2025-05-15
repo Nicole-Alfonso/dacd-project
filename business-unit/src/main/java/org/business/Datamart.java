@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Datamart {
     private final Map<String, List<HotelEvent>> hotelesPorCiudad = new HashMap<>();
+    // private final List<EventInfo> eventos = new ArrayList<>();   --> Hay que poner un EventInfo en shared-modules
+
 
     public synchronized void addEvent(HotelEvent event) {
         hotelesPorCiudad
@@ -26,4 +28,13 @@ public class Datamart {
                 .limit(topN)
                 .toList();
     }
+
+    /*public synchronized void addEvent(EventInfo event) {
+        eventos.add(event);
+    }
+
+    public List<EventInfo> getEventos() {
+        return eventos;
+    } */
+
 }

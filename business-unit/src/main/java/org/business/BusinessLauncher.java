@@ -22,6 +22,11 @@ public class BusinessLauncher {
             String provincia = args[1];
             int topN = Integer.parseInt(args[2]);
             unit.getTopValorados(provincia, topN).forEach(System.out::println);
+        /*} else if (comando.equalsIgnoreCase("evento") && args.length == 3) {
+            String nombreEvento = args[1];
+            double precioMax = Double.parseDouble(args[2]);
+            unit.getHotelesParaEvento(nombreEvento, precioMax).forEach(System.out::println);
+        } */
         } else {
             System.out.println("Comando no reconocido.");
         }
