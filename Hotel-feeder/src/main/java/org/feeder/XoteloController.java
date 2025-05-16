@@ -9,6 +9,8 @@ import org.shared.HotelEvent;
 
 import javax.jms.*;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.shared.InstantTypeAdapter;
+
 import java.util.List;
 
 public class XoteloController {
@@ -38,12 +40,7 @@ public class XoteloController {
             MessageProducer producer = session.createProducer(destination);
 
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(Instant.class, new JsonSerializer<Instant>() {
-                        @Override
-                        public JsonElement serialize(Instant src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
-                            return new JsonPrimitive(src.toString()); // ISO-8601 string
-                        }
-                    })
+                    .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
                     .create();
 
             for (HotelData hotel : hotels) {

@@ -1,11 +1,13 @@
 package org.business;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.shared.HotelEvent;
 import org.shared.EventInfo;
+import org.shared.InstantTypeAdapter;
 
 import javax.jms.*;
+import java.time.Instant;
 
 public class EventSubscriber {
 
@@ -26,7 +28,9 @@ public class EventSubscriber {
             Topic eventTopic = session.createTopic("TicketmasterEvents");
             MessageConsumer eventConsumer = session.createDurableSubscriber(eventTopic, "BusinessSub-Event");
 
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                    .create();
 
             // Listener para hoteles
             hotelConsumer.setMessageListener(message -> {

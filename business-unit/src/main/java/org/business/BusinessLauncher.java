@@ -1,16 +1,16 @@
 package org.business;
 
+import java.util.Optional;
+
 public class BusinessLauncher {
     public static void main(String[] args) {
         BusinessUnit unit = new BusinessUnit();
         unit.start();
 
         if (args.length == 0) {
-            System.out.println("Uso:");
-            System.out.println("  baratos <ciudad> <precioMax>");
-            System.out.println("  top <ciudad> <N>");
-            System.out.println("  categoria <ciudad> <LOW|MEDIUM|HIGH>");
-            System.out.println("  evento <nombreEvento> <precioMax>");
+            System.out.println("LLamada incorrecta:");
+            System.out.println("Ejemplo de Uso:");
+            System.out.println("  evento <nombreEvento> <precioMax> [categoria] [minRating] [maxDistKm]");
             return;
         }
 
@@ -31,11 +31,15 @@ public class BusinessLauncher {
             String categoria = args[2]; // LOW, MEDIUM, HIGH
             unit.getHotelesPorCategoria(ciudad, categoria).forEach(System.out::println);
 
-        } else if (comando.equalsIgnoreCase("evento") && args.length == 3) {
+        } else if (comando.equalsIgnoreCase("evento") && args.length >= 3) {
             String nombreEvento = args[1];
             double precioMax = Double.parseDouble(args[2]);
-            unit.getHotelesParaEvento(nombreEvento, precioMax).forEach(System.out::println);
+            Optional<String> categoria = (args.length >= 4) ? Optional.of(args[3]) : Optional.empty();
+            Optional<Double> minRating = (args.length >= 5) ? Optional.of(Double.parseDouble(args[4])) : Optional.empty();
+            Optional<Double> maxDist = (args.length >= 6) ? Optional.of(Double.parseDouble(args[5])) : Optional.empty();
 
+            unit.getHotelesFiltradosParaEvento(nombreEvento, categoria, Optional.of(precioMax), minRating, maxDist)
+                    .forEach(System.out::println);
         } else {
             System.out.println("Comando no reconocido.");
         }
