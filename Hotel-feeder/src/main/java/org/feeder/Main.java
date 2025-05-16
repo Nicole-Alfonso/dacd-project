@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         if (args.length != 2) {
-            System.out.println("❗ Uso: java Main <NombreCiudad> <LocationKey>");
+            System.out.println("Uso: java Main <NombreCiudad> <LocationKey>");
             System.out.println("Ejemplo: java Main Sevilla g187443");
             return;
         }

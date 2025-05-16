@@ -21,7 +21,7 @@ public class XoteloProvider implements HotelProvider {
     public List<HotelData> fetchHotels(String cityKey) {
         List<HotelData> hotelDataList = new ArrayList<>();
         try {
-            String hotelsUrl = BASE_HOTELS_URL + "location_key=" + cityKey + "&offset=0&limit=20";
+            String hotelsUrl = BASE_HOTELS_URL + "location_key=" + cityKey + "&offset=0&limit=5";
 
             JsonArray hotels = getJsonArrayFromUrl(hotelsUrl, "result", "list");
 

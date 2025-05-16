@@ -1,8 +1,10 @@
 package org.business;
 
 import org.shared.HotelEvent;
+import org.shared.EventInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BusinessUnit {
     private final Datamart datamart = new Datamart();
@@ -12,25 +14,18 @@ public class BusinessUnit {
         HistoricalEventLoader.loadFromFolder("eventstore/HotelPrice/Xotelo", datamart);
     }
 
-    public List<HotelEvent> getBaratos(String ciudad, double precioMax) {
-        return datamart.getHotelsUnderPrice(ciudad, precioMax);
-    }
+    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, double maxPrecio, String categoria, double minRating, double maxDistanciaKm) {
+        Optional<EventInfo> eventoOpt = datamart.getEventos().stream()
+                .filter(e -> e.name.equalsIgnoreCase(nombreEvento))
+                .findFirst();
 
-    public List<HotelEvent> getTopValorados(String ciudad, int topN) {
-        return datamart.getTopRated(ciudad, topN);
-    }
+        if (eventoOpt.isEmpty()) {
+            System.out.println("⚠ Evento no encontrado: " + nombreEvento);
+            return List.of();
+        }
 
-    public List<HotelEvent> getHotelesPorCategoria(String ciudad, String categoria) {
-        return datamart.getHotelsByCategory(ciudad, categoria);
-    }
-
-    public List<HotelEvent> getHotelesParaEvento(String eventName, double maxPrice) {
-        return datamart.getEventos().stream()
-                .filter(e -> e.name.toLowerCase().contains(eventName.toLowerCase()))
-                .findFirst()
-                .map(e -> datamart.getHotelsUnderPrice(e.city, maxPrice))
-                .orElse(List.of());
+        EventInfo evento = eventoOpt.get();
+        return datamart.getHotelesFiltrados(evento.city, evento.lat, evento.lon,
+                maxPrecio, categoria, minRating, maxDistanciaKm);
     }
 }
-
-
