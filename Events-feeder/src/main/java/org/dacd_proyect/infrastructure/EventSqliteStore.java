@@ -22,15 +22,13 @@ public class EventSqliteStore implements EventStore {
 
             String sql = """
                     CREATE TABLE IF NOT EXISTS events (
-                        id TEXT PRIMARY KEY,
-                        name TEXT,
+                        id TEXT,
+                        name TEXT PRIMARY KEY,
                         keyword TEXT,
-                        venue_id TEXT,
                         city TEXT,
                         country_code TEXT,
                         timestamp TEXT,
                         start_date_time TEXT,
-                        end_date_time TEXT,
                         url TEXT,
                         latlong TEXT
                     );
@@ -49,23 +47,21 @@ public class EventSqliteStore implements EventStore {
         try (Connection connection = DriverManager.getConnection(url);
              PreparedStatement pstmt = connection.prepareStatement(
                      "INSERT OR REPLACE INTO events (" +
-                             "id, name, keyword, venue_id, city, country_code, " +
-                             "timestamp, start_date_time, end_date_time, url, latlong) " +
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                             "id, name, keyword, city, country_code, " +
+                             "timestamp, start_date_time, url, latlong) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
              );
         ) {
 
             pstmt.setString(1, event.getId());
             pstmt.setString(2, event.getName());
             pstmt.setString(3, event.getKeyword());
-            pstmt.setString(4, event.getVenueId());
-            pstmt.setString(5, String.join(",", event.getCity()));
-            pstmt.setString(6, event.getCountryCode());
-            pstmt.setString(7, event.getTimestamp().toString());
-            pstmt.setString(8, event.getStartDateTime());
-            pstmt.setString(9, event.getEndDateTime());
-            pstmt.setString(10, event.getUrl());
-            pstmt.setString(11, event.getLatlong());
+            pstmt.setString(4, String.join(",", event.getCity()));
+            pstmt.setString(5, event.getCountryCode());
+            pstmt.setString(6, event.getTimestamp().toString());
+            pstmt.setString(7, event.getStartDateTime());
+            pstmt.setString(8, event.getUrl());
+            pstmt.setString(9, event.getLatlong());
 
             pstmt.executeUpdate();
 

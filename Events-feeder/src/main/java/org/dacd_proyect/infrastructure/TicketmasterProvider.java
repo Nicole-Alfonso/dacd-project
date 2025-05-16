@@ -64,9 +64,29 @@ public class TicketmasterProvider implements EventProvider {
                         latlong = location.optString("latitude", "0.0") + "," + location.optString("longitude", "0.0");
                     }
                 }
+//
+                String keyword = "";
+                if (eventJson.has("classifications")) {
+                    JSONArray classifications = eventJson.getJSONArray("classifications");
+                    if (classifications.length() > 0) {
+                        JSONObject classification = classifications.getJSONObject(0);
+                        keyword = classification.optString("segment", "");
+                    }
+                }
 
-                Event event = new Event(id, name, "", "", List.of(city), "ES",
-                        timestamp, startDateTime, "", urlEvent, latlong);
+
+                String countryCode = " ";
+                if (eventJson.has("_embedded")) {
+                    JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
+                    if (venues.has("country")) {
+                        JSONObject country = venues.getJSONObject("country");
+                        countryCode = country.optString("countryCode", " ");
+                    }
+                }
+//
+
+                Event event = new Event(id, name, keyword, List.of(city), countryCode,
+                        timestamp, startDateTime, urlEvent, latlong);
 
                 events.add(event);
             }
