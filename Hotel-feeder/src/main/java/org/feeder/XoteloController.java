@@ -1,11 +1,13 @@
+package org.feeder;
+
 import com.google.gson.Gson;
-import org.feeder.model.HotelData;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.feeder.application.HotelProvider;
 import org.feeder.application.HotelStore;
+import org.feeder.model.HotelData;
 import org.shared.HotelEvent;
 
 import javax.jms.*;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import java.util.List;
 
 public class XoteloController {
@@ -20,22 +22,25 @@ public class XoteloController {
 
     public void fetchSaveAndPublish(String cityApiKey, String cityName) {
         List<HotelData> hotels = provider.fetchHotels(cityApiKey);
-        Gson gson = new Gson();
+        System.out.println("Hoteles obtenidos: " + hotels.size());
+
+        Connection connection = null;
+        Session session = null;
 
         try {
             ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-            Connection connection = factory.createConnection();
+            connection = factory.createConnection();
             connection.start();
 
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createTopic("HotelPrice");
             MessageProducer producer = session.createProducer(destination);
 
+            Gson gson = new Gson();
+
             for (HotelData hotel : hotels) {
-                // 1. Guardar en la base de datos
                 store.saveHotel(hotel);
 
-                // 2. Crear y publicar evento
                 HotelEvent event = new HotelEvent(
                         "Xotelo",
                         hotel.getId(),
@@ -55,11 +60,17 @@ public class XoteloController {
                 producer.send(message);
             }
 
-            session.close();
-            connection.close();
+            producer.close();
 
         } catch (JMSException e) {
             System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());
+        } finally {
+            try {
+                if (session != null) session.close();
+                if (connection != null) connection.close();
+            } catch (JMSException e) {
+                System.err.println("Error cerrando conexión JMS: " + e.getMessage());
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package org.feeder.model;
 
 import org.shared.PriceOffer;
-
 import java.time.LocalDateTime;
 import java.util.List;
 

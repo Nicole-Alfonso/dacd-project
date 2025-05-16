@@ -1,6 +1,7 @@
+package org.feeder;
+
 import org.feeder.application.HotelProvider;
 import org.feeder.application.HotelStore;
-import org.feeder.model.Ciudades;
 import org.feeder.infrastructure.HotelSqliteStore;
 import org.feeder.infrastructure.XoteloProvider;
 
@@ -10,14 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
-        String dbUrl = "jdbc:sqlite:hotels.db";
-        String cityName = "Sevilla";
-
-        String cityKey = Ciudades.getKey(cityName);
-        if (cityKey == null) {
-            System.err.println("Clave API no encontrada para la ciudad: " + cityName);
+        if (args.length != 2) {
+            System.out.println("❗ Uso: java Main <NombreCiudad> <LocationKey>");
+            System.out.println("Ejemplo: java Main Sevilla g187443");
             return;
         }
+
+        String cityName = args[0];
+        String locationKey = args[1];
+        String dbUrl = "jdbc:sqlite:hotels.db";
 
         HotelProvider provider = new XoteloProvider();
         HotelStore store = new HotelSqliteStore(dbUrl);
@@ -27,11 +29,13 @@ public class Main {
 
         Runnable task = () -> {
             System.out.println("Fetching and publishing hotels for: " + cityName);
-            controller.fetchSaveAndPublish(cityKey, cityName);
+            controller.fetchSaveAndPublish(locationKey, cityName);
         };
 
+        // Ejecutar inmediatamente y luego cada hora
         scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
 
+        // Apagar de forma limpia si se termina
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Apagando el scheduler...");
             scheduler.shutdown();
