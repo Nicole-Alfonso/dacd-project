@@ -1,6 +1,7 @@
 package org.feeder;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
+import java.time.Instant;
 import org.feeder.application.HotelProvider;
 import org.feeder.application.HotelStore;
 import org.feeder.model.HotelData;
@@ -36,31 +37,44 @@ public class XoteloController {
             Destination destination = session.createTopic("HotelPrice");
             MessageProducer producer = session.createProducer(destination);
 
-            Gson gson = new Gson();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(Instant.class, new JsonSerializer<Instant>() {
+                        @Override
+                        public JsonElement serialize(Instant src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
+                            return new JsonPrimitive(src.toString()); // ISO-8601 string
+                        }
+                    })
+                    .create();
 
             for (HotelData hotel : hotels) {
-                store.saveHotel(hotel);
+                try {
+                    System.out.println("➡️ Guardando hotel con ID: " + hotel.getId());
+                    store.saveHotel(hotel);
 
-                HotelEvent event = new HotelEvent(
-                        "Xotelo",
-                        hotel.getId(),
-                        hotel.getName(),
-                        hotel.getCity(),
-                        hotel.getRating(),
-                        hotel.getLatitude(),
-                        hotel.getLongitude(),
-                        hotel.getMinPrice(),
-                        hotel.getMaxPrice(),
-                        hotel.getCategory().name(),
-                        hotel.getPriceOffers()
-                );
+                    HotelEvent event = new HotelEvent(
+                            Instant.now(),
+                            "Xotelo",
+                            hotel.getId(),
+                            hotel.getName(),
+                            hotel.getCity(),
+                            hotel.getRating(),
+                            hotel.getLatitude(),
+                            hotel.getLongitude(),
+                            hotel.getMinPrice(),
+                            hotel.getMaxPrice(),
+                            hotel.getCategory().name(),
+                            hotel.getPriceOffers()
+                    );
 
-                String json = gson.toJson(event);
-                TextMessage message = session.createTextMessage(json);
-                producer.send(message);
+                    String json = gson.toJson(event);
+                    System.out.println("➡ Enviando evento: " + json);
+                    TextMessage message = session.createTextMessage(json);
+                    producer.send(message);
+                } catch (Exception ex) {
+                    System.err.println("❌ Error con hotel ID " + hotel.getId() + ": " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
-
-            producer.close();
 
         } catch (JMSException e) {
             System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());

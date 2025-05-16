@@ -19,7 +19,7 @@ public class HotelEvent {
 
     public HotelEvent() {}
 
-    public HotelEvent(String ss, String id, String name, String city,
+    public HotelEvent(Instant ts, String ss, String id, String name, String city,
                       double rating, double lat, double lon,
                       double minPrice, double maxPrice, String category,
                       List<PriceOffer> priceOffers) {
