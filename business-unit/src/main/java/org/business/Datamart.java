@@ -47,7 +47,7 @@ public class Datamart {
         }
 
         String city = evento.city;
-        LocalDate eventDate = evento.date;
+        LocalDate eventDate = LocalDate.parse(evento.date);
 
         return hotelesPorCiudad.getOrDefault(city, Collections.emptyList())
                 .stream()
@@ -56,8 +56,8 @@ public class Datamart {
                 .filter(h -> category == null || h.category.equalsIgnoreCase(category))
                 .filter(h -> h.rating >= minRating)
                 .filter(h -> {
-                    if (evento.latitude == 0 || evento.longitude == 0) return true;
-                    double distance = distanceKm(h.latitude, h.longitude, evento.latitude, evento.longitude);
+                    if (evento.lat == 0 || evento.lon == 0) return true;
+                    double distance = distanceKm(h.lat, h.lon, evento.lat, evento.lon);
                     return distance <= maxDistanceKm;
                 })
                 .collect(Collectors.toList());
