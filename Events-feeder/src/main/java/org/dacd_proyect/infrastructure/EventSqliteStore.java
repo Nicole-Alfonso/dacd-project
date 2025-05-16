@@ -1,65 +1,79 @@
+
 package org.dacd_proyect.infrastructure;
 
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 
-
-
 public class EventSqliteStore implements EventStore {
-    private final String dbUrl;
+    private final String url;
 
-    public EventSqliteStore(String dbUrl) {
-        this.dbUrl = dbUrl;
-        initializeDatabase();
+    public EventSqliteStore(String url) {
+        this.url = url;
+        initDatabase();
     }
 
-    private void initializeDatabase() {
-        try (Connection conn = DriverManager.getConnection(dbUrl);
-             Statement stmt = conn.createStatement()) {
+    private void initDatabase() {
+        try (Connection connection = DriverManager.getConnection(url);
+             Statement stmt = connection.createStatement()) {
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS events (" +
-                    "id TEXT PRIMARY KEY, " +
-                    "name TEXT, " +
-                    "location TEXT, " +
-                    "date TEXT, " +
-                    "url TEXT, " +
-                    "latlong TEXT)");
+            String sql = """
+                    CREATE TABLE IF NOT EXISTS events (
+                        id TEXT PRIMARY KEY,
+                        name TEXT,
+                        keyword TEXT,
+                        venue_id TEXT,
+                        city TEXT,
+                        country_code TEXT,
+                        timestamp TEXT,
+                        start_date_time TEXT,
+                        end_date_time TEXT,
+                        url TEXT,
+                        latlong TEXT
+                    );
+                    """;
+
+            stmt.executeUpdate(sql);
+            System.out.println("Base de datos inicializada correctamente.");
 
         } catch (SQLException e) {
-            System.err.println("Error creating table: " + e.getMessage());
+            System.err.println("Error inicializando base de datos: " + e.getMessage());
         }
     }
 
     @Override
     public void saveEvent(Event event) {
-        try (Connection conn = DriverManager.getConnection(dbUrl)) {
-            conn.setAutoCommit(false);
+        try (Connection connection = DriverManager.getConnection(url);
+             PreparedStatement pstmt = connection.prepareStatement(
+                     "INSERT OR REPLACE INTO events (" +
+                             "id, name, keyword, venue_id, city, country_code, " +
+                             "timestamp, start_date_time, end_date_time, url, latlong) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+             );
+        ) {
 
-            String upsert = "INSERT OR REPLACE INTO events (id, name, location, date, url, latlong) VALUES (?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement stmt = conn.prepareStatement(upsert)) {
-                stmt.setString(1, event.getId());
-                stmt.setString(2, event.getName());
-                stmt.setString(3, event.getLocation());
-                stmt.setString(4, event.getDate()); // 👈 Date como String
-                stmt.setString(5, event.getUrl());
-                stmt.setString(6, event.getLatlong());
-                stmt.executeUpdate();
-            }
+            pstmt.setString(1, event.getId());
+            pstmt.setString(2, event.getName());
+            pstmt.setString(3, event.getKeyword());
+            pstmt.setString(4, event.getVenueId());
+            pstmt.setString(5, String.join(",", event.getCity()));
+            pstmt.setString(6, event.getCountryCode());
+            pstmt.setString(7, event.getTimestamp().toString());
+            pstmt.setString(8, event.getStartDateTime());
+            pstmt.setString(9, event.getEndDateTime());
+            pstmt.setString(10, event.getUrl());
+            pstmt.setString(11, event.getLatlong());
 
-            conn.commit();
+            pstmt.executeUpdate();
+
         } catch (SQLException e) {
-            System.err.println("Error saving event: " + e.getMessage());
+            System.err.println("Error guardando evento en la base de datos: " + e.getMessage());
         }
     }
 }
-
-
 
 
 
