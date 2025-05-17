@@ -19,6 +19,10 @@ public class Datamart {
     public synchronized void addEvent(EventInfo event) {
         eventos.add(event);
     }
+    public List<EventInfo> getEventos() {
+        return eventos;
+    }
+
 
     public Optional<EventInfo> findEventoByNombre(String name) {
         return eventos.stream()
