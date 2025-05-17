@@ -19,13 +19,13 @@ public class TicketmasterProvider implements EventProvider {
     }
 
     @Override
-    public List<Event> fetchEvents(String city, String startDateTime) {
+    public List<Event> fetchEvents(String city, String date) {
         List<Event> events = new ArrayList<>();
 
         String url = "https://app.ticketmaster.com/discovery/v2/events.json" +
                 "?apikey=" + apiKey +
                 "&city=" + city +
-                "&startDateTime=" + startDateTime +
+                "&startDateTime=" + date +
                 "&size=20";
 
         Request request = new Request.Builder()
@@ -42,7 +42,7 @@ public class TicketmasterProvider implements EventProvider {
             JSONObject jsonObject = new JSONObject(jsonData);
 
             if (!jsonObject.has("_embedded")) {
-                System.err.println("No se encontraron eventos para " + city + " en la fecha " + startDateTime);
+                System.err.println("No se encontraron eventos para " + city + " en la fecha " + date);
                 return events;
             }
 
@@ -66,10 +66,10 @@ public class TicketmasterProvider implements EventProvider {
                     }
                 }
 
-                String source = "";
+                String ss = "";
                 if (eventJson.has("promoter")) {
                     JSONObject promoter = eventJson.getJSONObject("promoter");
-                    source = promoter.optString("name", "");
+                    ss = promoter.optString("name", "");
                 }
 
                 String keyword = "";
@@ -92,8 +92,8 @@ public class TicketmasterProvider implements EventProvider {
                 }
 
 
-                Event event = new Event(source, id, name, keyword, List.of(city), countryCode,
-                        timestamp, startDateTime, urlEvent, latlong);
+                Event event = new Event(ss, id, name, keyword, List.of(city), countryCode,
+                        timestamp, date, urlEvent, latlong);
 
                 events.add(event);
             }

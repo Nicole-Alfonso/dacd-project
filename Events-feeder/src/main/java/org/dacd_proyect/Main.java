@@ -16,16 +16,16 @@ public class Main {
         }
 
         String apiKey = args[0];
-        List<String> cities = Arrays.asList("Madrid");
-        String startDateTime = "2026-05-30T00:00:00Z";
+        List<String> cities = Arrays.asList("Barcelona");
+        String date = "2025-07-15T00:00:00Z";
 
         TicketmasterProvider provider = new TicketmasterProvider(apiKey);
         EventStore store = new EventSqliteStore("jdbc:sqlite:events.db");
 
         TicketmasterController controller = new TicketmasterController(provider, store);
-        controller.fetchSaveAndPublish(cities, startDateTime);
+        controller.fetchSaveAndPublish(cities, date);
 
-        System.out.println("Eventos cargados para " + cities + " el día " + startDateTime);
+        System.out.println("Eventos cargados para " + cities + " el día " + date);
     }
 }
 

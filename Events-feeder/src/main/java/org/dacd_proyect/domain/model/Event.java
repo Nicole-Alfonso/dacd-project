@@ -5,34 +5,34 @@ import java.time.Instant;
 import java.util.List;
 
 public class Event {
-    private final String source;
+    private final String ss;
     private final String id;
     private final String name;
     private final String keyword;
     private final List<String> city;
     private final String countryCode;
-    private final Instant timestamp;
-    private final String startDateTime;
+    private final Instant ts;
+    private final String date;
     private final String url;
     private final String latlong;
 
-    public Event(String source, String id, String name, String keyword, List<String> city,
-                 String countryCode, Instant timestamp,
-                 String startDateTime, String url, String latlong) {
+    public Event(String ss, String id, String name, String keyword, List<String> city,
+                 String countryCode, Instant ts,
+                 String date, String url, String latlong) {
 
-        this.source = source;
+        this.ss = ss;
         this.id = id;
         this.name = name;
         this.keyword = keyword;
         this.city = city;
         this.countryCode = countryCode;
-        this.timestamp = timestamp;
-        this.startDateTime = startDateTime;
+        this.ts = ts;
+        this.date = date;
         this.url = url;
         this.latlong = latlong;
     }
 
-    public String getSource() {return source; }
+    public String getSource() {return ss; }
 
     public String getId() {
         return id;
@@ -55,11 +55,11 @@ public class Event {
     }
 
     public Instant getTimestamp() {
-        return timestamp;
+        return ts;
     }
 
     public String getStartDateTime() {
-        return startDateTime;
+        return date;
     }
 
     public String getUrl() {
