@@ -37,7 +37,6 @@ public class HotelFilterRequest {
         return maxDistanceKm;
     }
 
-    // setters opcionales si quieres usar @RequestBody directamente
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
