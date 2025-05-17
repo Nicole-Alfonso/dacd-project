@@ -9,7 +9,7 @@ public class InstantTypeAdapter implements JsonSerializer<Instant>, JsonDeserial
 
     @Override
     public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toString()); // ISO format
+        return new JsonPrimitive(src.toString());
     }
 
     @Override

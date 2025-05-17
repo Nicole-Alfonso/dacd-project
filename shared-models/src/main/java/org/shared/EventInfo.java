@@ -3,8 +3,8 @@ package org.shared;
 import java.time.Instant;
 
 public class EventInfo {
-    public Instant ts;       // timestamp
-    public String ss;        // source (e.g., "Ticketmaster")
+    public Instant ts;
+    public String ss;
     public String id;
     public String name;
     public String city;
