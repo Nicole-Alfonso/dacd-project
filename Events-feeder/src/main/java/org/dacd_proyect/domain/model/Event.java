@@ -1,4 +1,3 @@
-
 package org.dacd_proyect.domain.model;
 
 import java.time.Instant;
@@ -14,12 +13,12 @@ public class Event {
     private final Instant timestamp;
     private final String startDateTime;
     private final String url;
-    private final String latlong;
+    private final double lat;
+    private final double lon;
 
     public Event(String source, String id, String name, String keyword, List<String> city,
-                 String countryCode, Instant timestamp,
-                 String startDateTime, String url, String latlong) {
-
+                 String countryCode, Instant timestamp, String startDateTime, String url,
+                 double lat, double lon) {
         this.source = source;
         this.id = id;
         this.name = name;
@@ -29,45 +28,32 @@ public class Event {
         this.timestamp = timestamp;
         this.startDateTime = startDateTime;
         this.url = url;
-        this.latlong = latlong;
+        this.lat = lat;
+        this.lon = lon;
     }
 
-    public String getSource() {return source; }
+    public String getSource() { return source; }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getKeyword() { return keyword; }
+    public List<String> getCity() { return city; }
+    public String getCountryCode() { return countryCode; }
+    public Instant getTimestamp() { return timestamp; }
+    public String getStartDateTime() { return startDateTime; }
+    public String getUrl() { return url; }
+    public double getLat() { return lat; }
+    public double getLon() { return lon; }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public List<String> getCity() {
-        return city;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public String getStartDateTime() {
-        return startDateTime;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getLatlong() {
-        return latlong;
+    public org.shared.EventInfo toEventInfo() {
+        return new org.shared.EventInfo(
+                this.source,
+                this.id,
+                this.name,
+                this.city.isEmpty() ? "Unknown" : this.city.get(0),
+                this.startDateTime,
+                this.url,
+                this.lat,
+                this.lon
+        );
     }
 }
-

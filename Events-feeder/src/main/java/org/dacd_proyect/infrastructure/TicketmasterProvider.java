@@ -28,9 +28,7 @@ public class TicketmasterProvider implements EventProvider {
                 "&startDateTime=" + startDateTime +
                 "&size=20";
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
@@ -51,19 +49,24 @@ public class TicketmasterProvider implements EventProvider {
             for (int i = 0; i < eventArray.length(); i++) {
                 JSONObject eventJson = eventArray.getJSONObject(i);
 
-
                 String id = eventJson.optString("id", "Sin ID");
                 String name = eventJson.optString("name", "Sin nombre");
                 String urlEvent = eventJson.optString("url", "Sin URL");
                 Instant timestamp = Instant.now();
 
-                String latlong = "0.0,0.0";
-                if (eventJson.has("_embedded")) {
-                    JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
-                    if (venues.has("location")) {
-                        JSONObject location = venues.getJSONObject("location");
-                        latlong = location.optString("latitude", "0.0") + "," + location.optString("longitude", "0.0");
+                double lat = 0.0;
+                double lon = 0.0;
+                try {
+                    if (eventJson.has("_embedded")) {
+                        JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
+                        if (venues.has("location")) {
+                            JSONObject location = venues.getJSONObject("location");
+                            lat = Double.parseDouble(location.optString("latitude", "0.0"));
+                            lon = Double.parseDouble(location.optString("longitude", "0.0"));
+                        }
                     }
+                } catch (Exception e) {
+                    System.err.println("Error parsing lat/lon: " + e.getMessage());
                 }
 
                 String source = "";
@@ -81,7 +84,6 @@ public class TicketmasterProvider implements EventProvider {
                     }
                 }
 
-
                 String countryCode = " ";
                 if (eventJson.has("_embedded")) {
                     JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
@@ -90,10 +92,9 @@ public class TicketmasterProvider implements EventProvider {
                         countryCode = country.optString("countryCode", " ");
                     }
                 }
-//
 
                 Event event = new Event(source, id, name, keyword, List.of(city), countryCode,
-                        timestamp, startDateTime, urlEvent, latlong);
+                        timestamp, startDateTime, urlEvent, lat, lon);
 
                 events.add(event);
             }
@@ -105,4 +106,3 @@ public class TicketmasterProvider implements EventProvider {
         return events;
     }
 }
-
