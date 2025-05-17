@@ -28,6 +28,17 @@ public class EventInfo {
         this.lon = lon;
     }
 
+    // Getters
+    public Instant getTs() { return ts; }
+    public String getSs() { return ss; }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getCity() { return city; }
+    public String getDate() { return date; }
+    public String getUrl() { return url; }
+    public double getLat() { return lat; }
+    public double getLon() { return lon; }
+
     @Override
     public String toString() {
         return name + " @ " + city + " on " + date + " | " + url;
