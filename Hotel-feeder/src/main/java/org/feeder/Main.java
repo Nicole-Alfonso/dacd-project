@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         if (args.length != 2) {
             System.out.println("Uso: java Main <NombreCiudad> <LocationKey>");
-            System.out.println("Ejemplo: java Main Sevilla g187443");
+            System.out.println("Ejemplo: java Main Madrid g187514");
             return;
         }
 

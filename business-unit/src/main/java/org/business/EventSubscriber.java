@@ -38,7 +38,7 @@ public class EventSubscriber {
                     try {
                         HotelEvent event = gson.fromJson(text.getText(), HotelEvent.class);
                         datamart.addEvent(event);
-                        System.out.println("Hotel recibido: " + event.name);
+                        System.out.println("Hotel recibido: " + event.getName());
                     } catch (Exception e) {
                         System.err.println("Error procesando HotelEvent: " + e.getMessage());
                     }
@@ -51,7 +51,7 @@ public class EventSubscriber {
                     try {
                         EventInfo event = gson.fromJson(text.getText(), EventInfo.class);
                         datamart.addEvent(event);
-                        System.out.println("Evento recibido: " + event.name);
+                        System.out.println("Evento recibido: " + event.getName());
                     } catch (Exception e) {
                         System.err.println("Error procesando EventInfo: " + e.getMessage());
                     }

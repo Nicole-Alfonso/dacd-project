@@ -55,20 +55,9 @@ public class HotelData {
     public PriceCategory getCategory() { return category; }
     public LocalDateTime getTimestamp() { return timestamp; }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Hotel: ").append(name).append("\n");
-        sb.append("City: ").append(city).append("\n");
-        sb.append("Rating: ").append(rating).append("\n");
-        sb.append("Coordinates: ").append(latitude).append(", ").append(longitude).append("\n");
-        sb.append("Category: ").append(category).append(" (from ").append(minPrice).append(" to ").append(maxPrice).append(")\n");
-        sb.append("Price Offers:\n");
-
-        for (PriceOffer offer : priceOffers) {
-            sb.append("  - ").append(offer.toString()).append("\n");
-        }
-
-        return sb.toString();
+        return String.format("%s [%s] %.1f⭐ (%s) %.2f - %.2f\n%s",
+                name, city, rating, category, minPrice, maxPrice,
+                priceOffers.stream().map(PriceOffer::toString).reduce("", (a, b) -> a + " - " + b + "\n"));
     }
 }

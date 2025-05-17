@@ -4,20 +4,18 @@ import java.time.Instant;
 import java.util.List;
 
 public class HotelEvent {
-    public Instant ts;       // Timestamp UTC
-    public String ss;        // Source system (e.g. "Xotelo")
-    public String id;
-    public String name;
-    public String city;
-    public double rating;
-    public double lat;
-    public double lon;
-    public double minPrice;
-    public double maxPrice;
-    public String category;
-    public List<PriceOffer> priceOffers;
-
-    public HotelEvent() {}
+    private final Instant ts;
+    private final String ss;
+    private final String id;
+    private final String name;
+    private final String city;
+    private final double rating;
+    private final double lat;
+    private final double lon;
+    private final double minPrice;
+    private final double maxPrice;
+    private final String category;
+    private final List<PriceOffer> priceOffers;
 
     public HotelEvent(Instant ts, String ss, String id, String name, String city,
                       double rating, double lat, double lon,
@@ -36,6 +34,20 @@ public class HotelEvent {
         this.category = category;
         this.priceOffers = priceOffers;
     }
+
+    // Getters
+    public Instant getTs() { return ts; }
+    public String getSs() { return ss; }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getCity() { return city; }
+    public double getRating() { return rating; }
+    public double getLat() { return lat; }
+    public double getLon() { return lon; }
+    public double getMinPrice() { return minPrice; }
+    public double getMaxPrice() { return maxPrice; }
+    public String getCategory() { return category; }
+    public List<PriceOffer> getPriceOffers() { return priceOffers; }
 
     @Override
     public String toString() {
