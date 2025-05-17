@@ -51,6 +51,7 @@ public class TicketmasterProvider implements EventProvider {
             for (int i = 0; i < eventArray.length(); i++) {
                 JSONObject eventJson = eventArray.getJSONObject(i);
 
+
                 String id = eventJson.optString("id", "Sin ID");
                 String name = eventJson.optString("name", "Sin nombre");
                 String urlEvent = eventJson.optString("url", "Sin URL");
@@ -64,7 +65,13 @@ public class TicketmasterProvider implements EventProvider {
                         latlong = location.optString("latitude", "0.0") + "," + location.optString("longitude", "0.0");
                     }
                 }
-//
+
+                String source = "";
+                if (eventJson.has("promoter")) {
+                    JSONObject promoter = eventJson.getJSONObject("promoter");
+                    source = promoter.optString("name", "");
+                }
+
                 String keyword = "";
                 if (eventJson.has("classifications")) {
                     JSONArray classifications = eventJson.getJSONArray("classifications");
@@ -85,7 +92,7 @@ public class TicketmasterProvider implements EventProvider {
                 }
 //
 
-                Event event = new Event(id, name, keyword, List.of(city), countryCode,
+                Event event = new Event(source, id, name, keyword, List.of(city), countryCode,
                         timestamp, startDateTime, urlEvent, latlong);
 
                 events.add(event);

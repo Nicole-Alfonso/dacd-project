@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 
 public class Event {
+    private final String source;
     private final String id;
     private final String name;
     private final String keyword;
@@ -15,9 +16,11 @@ public class Event {
     private final String url;
     private final String latlong;
 
-    public Event(String id, String name, String keyword, List<String> city,
+    public Event(String source, String id, String name, String keyword, List<String> city,
                  String countryCode, Instant timestamp,
                  String startDateTime, String url, String latlong) {
+
+        this.source = source;
         this.id = id;
         this.name = name;
         this.keyword = keyword;
@@ -28,6 +31,8 @@ public class Event {
         this.url = url;
         this.latlong = latlong;
     }
+
+    public String getSource() {return source; }
 
     public String getId() {
         return id;
