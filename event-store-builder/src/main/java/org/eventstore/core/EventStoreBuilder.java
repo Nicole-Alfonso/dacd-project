@@ -9,21 +9,21 @@ import javax.jms.*;
 
 public class EventStoreBuilder {
 
+    private static final String BROKER_URL = "tcp://localhost:61616";
+    private static final String CLIENT_ID = "EventStoreBuilder";
+    private static final String[] TOPICS = {"HotelPrice", "TicketmasterEvents"};
+
     public void start() {
         try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+            ConnectionFactory factory = new ActiveMQConnectionFactory(BROKER_URL);
             Connection connection = factory.createConnection();
-            connection.setClientID("EventStoreBuilder");
+            connection.setClientID(CLIENT_ID);
             connection.start();
 
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            // Añade aquí los topics que quieres escuchar
-            String[] topics = {"HotelPrice", "EventInfo"};
-
             EventWriter writer = new FileEventWriter();
 
-            for (String topicName : topics) {
+            for (String topicName : TOPICS) {
                 Topic topic = session.createTopic(topicName);
                 MessageConsumer consumer = session.createDurableSubscriber(topic, topicName + "-Sub");
 
@@ -31,8 +31,10 @@ public class EventStoreBuilder {
                 System.out.println("Escuchando topic: " + topicName);
             }
 
-        } catch (Exception e) {
+        } catch (JMSException e) {
             System.err.println("Error al conectar con ActiveMQ: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Error inesperado al iniciar EventStoreBuilder: " + e.getMessage());
         }
     }
 }

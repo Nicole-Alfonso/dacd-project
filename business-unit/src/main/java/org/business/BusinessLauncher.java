@@ -2,22 +2,22 @@ package org.business;
 
 public class BusinessLauncher {
     public static void main(String[] args) {
-        BusinessUnit unit = new BusinessUnit();
-        unit.start();
-
-        if (args.length < 2) {
-            System.out.println("Error en la llamada. Ejemplo de uso:");
-            System.out.println("  evento <nombreEvento> <precioMax> [categoria] [minRating] [distanciaMaxKm]");
+        if (args.length < 1) {
+            System.out.println("Uso:");
+            System.out.println("  evento <nombreEvento> [categoria] [precioMax] [minRating] [distanciaMaxKm]");
             return;
         }
 
         String nombreEvento = args[0];
-        double maxPrecio = Double.parseDouble(args[1]);
-        String categoria = args.length >= 3 ? args[2] : null;
+        String categoria = args.length >= 2 ? args[1] : null;
+        double maxPrecio = args.length >= 3 ? Double.parseDouble(args[2]) : Double.MAX_VALUE;
         double minRating = args.length >= 4 ? Double.parseDouble(args[3]) : 0.0;
         double maxDistancia = args.length >= 5 ? Double.parseDouble(args[4]) : Double.MAX_VALUE;
 
-        unit.getHotelesParaEvento(nombreEvento, maxPrecio, categoria, minRating, maxDistancia)
+        BusinessUnit unit = new BusinessUnit();
+        unit.start();
+
+        unit.getHotelesFiltrados(nombreEvento, categoria, maxPrecio, minRating, maxDistancia)
                 .forEach(System.out::println);
     }
 }
