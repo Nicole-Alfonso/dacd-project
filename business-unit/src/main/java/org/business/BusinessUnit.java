@@ -1,22 +1,32 @@
 package org.business;
 
-import org.shared.HotelEvent;
 import org.shared.EventInfo;
-
+import org.shared.HotelEvent;
 import java.util.List;
 import java.util.Optional;
 
 public class BusinessUnit {
-    private final Datamart datamart = new Datamart();
+    private final Datamart datamart;
+
+    public BusinessUnit() {
+        this.datamart = new Datamart();
+    }
 
     public void start() {
         EventSubscriber.startListening(datamart);
         HistoricalEventLoader.loadFromFolder("eventstore/HotelPrice/Xotelo", datamart);
     }
 
-    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, double maxPrecio, String categoria, double minRating, double maxDistanciaKm) {
+    public List<HotelEvent> getHotelesFiltrados(String nombreEvento, String categoria,
+                                                double maxPrecio, double minRating, double maxDistanciaKm) {
+        return datamart.findEventoByNombre(nombreEvento)
+                .map(e -> datamart.getHotelesFiltrados(e.getCity(), e.getLat(), e.getLon(), maxPrecio, categoria, minRating, maxDistanciaKm))
+                .orElse(List.of());
+    }
+
+    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String categoria, double maxPrecio, double minRating, double maxDistanciaKm) {
         Optional<EventInfo> eventoOpt = datamart.getEventos().stream()
-                .filter(e -> e.name.equalsIgnoreCase(nombreEvento))
+                .filter(e -> e.getName().equalsIgnoreCase(nombreEvento))
                 .findFirst();
 
         if (eventoOpt.isEmpty()) {
@@ -25,7 +35,16 @@ public class BusinessUnit {
         }
 
         EventInfo evento = eventoOpt.get();
-        return datamart.getHotelesFiltrados(evento.city, evento.lat, evento.lon,
-                maxPrecio, categoria, minRating, maxDistanciaKm);
+
+        return datamart.getHotelesFiltrados(
+                evento.getCity(),
+                evento.getLat(),
+                evento.getLon(),
+                maxPrecio,
+                categoria,
+                minRating,
+                maxDistanciaKm
+        );
     }
+
 }

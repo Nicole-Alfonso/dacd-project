@@ -14,6 +14,7 @@
         <module>Events-feeder</module>
         <module>business-unit</module>
         <module>event-store-builder</module>
+        <module>business-api</module>
     </modules>
 
     <properties>
