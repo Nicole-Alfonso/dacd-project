@@ -90,7 +90,7 @@ public class TicketmasterProvider implements EventProvider {
                         countryCode = country.optString("countryCode", " ");
                     }
                 }
-//
+
 
                 Event event = new Event(source, id, name, keyword, List.of(city), countryCode,
                         timestamp, startDateTime, urlEvent, latlong);
