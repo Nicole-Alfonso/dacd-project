@@ -54,19 +54,28 @@ public class TicketmasterProvider implements EventProvider {
                 String urlEvent = eventJson.optString("url", "Sin URL");
                 Instant timestamp = Instant.now();
 
+                String latlong = eventJson.optJSONObject("_embedded")
+                        .getJSONArray("venues")
+                        .getJSONObject(0)
+                        .optJSONObject("location")
+                        .optString("latitude", "0.0") + "," +
+                        eventJson.optJSONObject("_embedded")
+                                .getJSONArray("venues")
+                                .getJSONObject(0)
+                                .optJSONObject("location")
+                                .optString("longitude", "0.0");
+
                 double lat = 0.0;
                 double lon = 0.0;
-                try {
-                    if (eventJson.has("_embedded")) {
-                        JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
-                        if (venues.has("location")) {
-                            JSONObject location = venues.getJSONObject("location");
-                            lat = Double.parseDouble(location.optString("latitude", "0.0"));
-                            lon = Double.parseDouble(location.optString("longitude", "0.0"));
-                        }
+
+                if (latlong.contains(",")) {
+                    String[] parts = latlong.split(",");
+                    try {
+                        lat = Double.parseDouble(parts[0]);
+                        lon = Double.parseDouble(parts[1]);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error al convertir latlong a double: " + e.getMessage());
                     }
-                } catch (Exception e) {
-                    System.err.println("Error parsing lat/lon: " + e.getMessage());
                 }
 
                 String source = "";

@@ -4,7 +4,6 @@ import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 
 import java.sql.*;
-import java.util.List;
 
 public class EventSqliteStore implements EventStore {
     private final String url;
