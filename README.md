@@ -141,9 +141,9 @@ The structure of this module is:
 ---
 ### How to run the program
 
-![Running](Im1.jpg)
+![Running](im1.jpg)
 
-![Running](Im2.jpg)
+![Running](im2.jpg)
 
 ![Running](Im3.jpg)
 
