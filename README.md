@@ -65,9 +65,9 @@ The Datamart in the Business Unit module acts as a in-memory data store for even
 
 ---
 
-### Modules
+## Modules
 
-**Event-Feeder Module:** <br>
+### **Event-Feeder Module:** <br>
 Retrieves event data from the Ticketmaster API and publishes this data to the `event.Event` topic on ActiveMQ. <br>
 Includes classes and packages like:
 - **Main:** Entry point for the event feeder. Initializes the controller and sets up a scheduler for periodic event data fetching.
@@ -83,7 +83,7 @@ Includes classes and packages like:
 
 ![Class diagram](Event-feeder.png)
 
-**Hotel-Feeder Module:** <br>
+### **Hotel-Feeder Module:** <br>
 Retrieves hotel and pricing data from the Xotelo API. Publishes this data to the hotel.Hotel topic on ActiveMQ. <br>
 Includes classes and packages like:
 - **Main:** Entry point for the hotel feeder. Initializes the controller and sets up a scheduler for periodic hotel data fetching.
@@ -100,7 +100,7 @@ Includes classes and packages like:
 ![Class diagram](Hotel-feeder.png)
 
 
-**Event-Store-Builder Module:** <br>
+### **Event-Store-Builder Module:** <br>
 Subscribes to the message broker and stores events in `.events` files for later processing. Manages event serialization and file storage. <br>
 It has the following structure:
 - *core:* <br>
@@ -117,7 +117,7 @@ It has the following structure:
 ![Class diagram](event-store-builder.png)
 
 
-**Business-Unit Module:** <br> 
+### **Business-Unit Module:** <br> 
 Processes stored events to generate user-friendly recommendations based on city, date, price, and rating. Provides in-memory data structures for fast analysis. <br>
 The structure of this module is: 
 
@@ -128,12 +128,27 @@ The structure of this module is:
 - **HistoricalEventLoader:** Loads historical hotel events from files into the datamart.
 
 
-**Business-Api Module:**
-- Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences.
-- It exposes HTTP endpoints for filtering and retrieving hotel recommendations, bridging the gap between the core business logic in the Business Unit and user-facing applications.
+### **Business-Api Module:** <br>
+Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences. It exposes HTTP endpoints for filtering and retrieving hotel recommendations, bridging the gap between the core business logic in the Business Unit and user-facing applications. <br>
+Structure of this module: 
+
+- **BusinessApiApplication:** Main entry point for the Spring Boot application, initializes the web server. <br>
+- *controller:* <br>
+**HotelController:** Exposes REST endpoints to search for hotels near events using filters. <br>
+- *dto:* <br>
+**HotelFilterRequest:** Data transfer object for hotel filter parameters.
+
   
-**Shared-Model Module:**
-- Is responsible for providing common data structures and utilities that are used across the various project modules, including Event-Feeder, Hotel-Feeder, and Business-Unit.
+### **Shared-Model Module:** <br>
+Is responsible for providing common data structures and utilities that are used across the various project modules, including Event-Feeder, Hotel-Feeder, and Business-Unit. <br>
+Structure of Shared-Model module:
+
+- **EventInfo:** Holds basic information about an event, including location, date, and URL. <br>
+- **FiltroHotel:** Represents filter criteria for searching hotels (category, price, rating, distance). <br>
+- **HotelEvent:** Contains detailed hotel data, including pricing, rating, location, and availability dates. <br>
+- **InstantTypeAdapter:** Handles JSON serialization and deserialization for Instant timestamps.<br>
+- **LocalDateTypeAdapter:** Handles JSON serialization and deserialization for LocalDate dates.<br>
+- **PriceOffer:** Represents a hotel price offer from a specific provider, including price and currency.
 
 
 > Each module has a package called test, which includes some tests to verify the correct operation of the module.
