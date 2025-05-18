@@ -61,37 +61,47 @@ The in-memory `Datamart` in the business unit module allows:
 
 ### Modules
 
-Event-Feeder Module:
+**Event-Feeder Module:**
 - Retrieves event data from the Ticketmaster API.
 - Publishes this data to the `event.Event` topic on ActiveMQ.
 - Includes classes such as TicketmasterController and Main, and three packages: application (EventProvider and EventStore), domain.model (Event) and infrastructure (EventSqliteStore and TicketmasterProvider).
 
 ![Class diagram](Event-feeder.png)
 
-Hotel-Feeder Module:
-- Retrieves hotel and pricing data from the Xotelo API.
-- Publishes this data to the hotel.Hotel topic on ActiveMQ.
-- Includes classes like XoteloController and Main, and three packages: application (HotelProvider and HotelStore), model (HotelData) and infrastructure (XoteloProvider and HotelSqliteStore).
+**Hotel-Feeder Module:** <br>
+Retrieves hotel and pricing data from the Xotelo API. Publishes this data to the hotel.Hotel topic on ActiveMQ. <br>
+<br>
+Includes classes and packages like:
+- **Main:** Entry point for the hotel feeder. Initializes the controller and sets up a scheduler for periodic hotel data fetching.
+- **XoteloController:** Coordinates fetching, storing, and publishing hotel data to ActiveMQ, using the HotelProvider and HotelStore interfaces. <br>
+- *application:* <br>
+**HotelProvider:** Defines de fetching of hotel data received. <br>
+**HotelStore:** Defines the storing hotel data in a persistent database.<br>
+- *model:* <br>
+**HotelData:** Represents hotel details including prices, location, and rating.<br>
+- *infrastructure:* <br>
+**XoteloProvider:** Implements HotelProvider, fetching hotel and price data from the Xotelo API. <br>
+**HotelSqliteStore:** Implements HotelStore, managing local SQLite storage for hotel and offer data.
 
 ![Class diagram](Hotel-feeder.png)
 
 
-Event-Store-Builder Module:
+**Event-Store-Builder Module:**
 - Subscribes to the message broker and stores events in `.events` files for later processing.
 - Manages event serialization and file storage.
   
 ![Class diagram](event-store-builder.png)
 
 
-Business-Unit Module:
+**Business-Unit Module:**
 - Processes stored events to generate user-friendly recommendations based on city, date, price, and rating.
 - Provides in-memory data structures for fast analysis.
 
-Business-Api Module:
+**Business-Api Module:**
 - Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences.
 - It exposes HTTP endpoints for filtering and retrieving hotel recommendations, bridging the gap between the core business logic in the Business Unit and user-facing applications.
   
-Shared-Model Module: 
+**Shared-Model Module:**
 - Is responsible for providing common data structures and utilities that are used across the various project modules, including Event-Feeder, Hotel-Feeder, and Business-Unit.
 
 
