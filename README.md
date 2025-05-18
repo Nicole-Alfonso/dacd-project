@@ -63,22 +63,25 @@ The in-memory `Datamart` in the business unit module allows:
 
 Event-Feeder Module:
 - Retrieves event data from the Ticketmaster API.
-- Publishes this data to the event.Event topic on ActiveMQ.
+- Publishes this data to the `event.Event` topic on ActiveMQ.
 - Includes classes such as TicketmasterController and Main, and three packages: application (EventProvider and EventStore), domain.model (Event) and infrastructure (EventSqliteStore and TicketmasterProvider).
 
-![Class diagram](Captura%20de%20pantalla%202025-05-18%20140651.png)
+![Class diagram](Event-feeder.png)
 
 Hotel-Feeder Module:
 - Retrieves hotel and pricing data from the Xotelo API.
 - Publishes this data to the hotel.Hotel topic on ActiveMQ.
 - Includes classes like XoteloController and Main, and three packages: application (HotelProvider and HotelStore), model (HotelData) and infrastructure (XoteloProvider and HotelSqliteStore).
 
-![Class diagram](Captura%20de%20pantalla%202025-05-18%20180250.png)
+![Class diagram](Hotel-feeder.png)
 
 
 Event-Store-Builder Module:
-- Subscribes to the message broker and stores events in .events files for later processing.
+- Subscribes to the message broker and stores events in `.events` files for later processing.
 - Manages event serialization and file storage.
+  
+![Class diagram](event-store-builder.png)
+
 
 Business-Unit Module:
 - Processes stored events to generate user-friendly recommendations based on city, date, price, and rating.
@@ -93,7 +96,7 @@ Shared-Model Module:
 
 
 > Each module has a package called test, which includes some tests to verify the correct operation of the module.
-
+> Packages are not included on the class diagrams.
 ---
 ### How to run the program
 
