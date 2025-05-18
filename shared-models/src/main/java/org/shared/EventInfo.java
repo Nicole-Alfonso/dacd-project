@@ -1,6 +1,7 @@
 package org.shared;
 
 import java.time.Instant;
+import java.time.temporal.Temporal;
 
 public class EventInfo {
     private final Instant ts;
@@ -32,7 +33,7 @@ public class EventInfo {
     public String getId() { return id; }
     public String getName() { return name; }
     public String getCity() { return city; }
-    public String getDate() { return date; }
+    public Temporal getDate() { return date; }
     public String getUrl() { return url; }
     public double getLat() { return lat; }
     public double getLon() { return lon; }
