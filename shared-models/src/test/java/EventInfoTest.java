@@ -1,5 +1,8 @@
 import org.junit.jupiter.api.Test;
 import org.shared.EventInfo;
+
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EventInfoTest {
@@ -7,8 +10,8 @@ public class EventInfoTest {
     @Test
     void testEventInfoCreation() {
         EventInfo event = new EventInfo(
-                "Ticketmaster", "ev1", "Concierto Coldplay", "Barcelona",
-                "2025-07-15", "https://ticket.com", 41.38, 2.17
+                Instant.now(), "Ticketmaster", "Concierto Coldplay", "Barcelona",
+                "2025-07-15", "https://ticket.com", "", 41.38, 2.17
         );
 
         assertEquals("ev1", event.getId());

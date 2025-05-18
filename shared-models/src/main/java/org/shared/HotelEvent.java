@@ -7,7 +7,6 @@ public class HotelEvent {
     private final Instant ts;
     private final String ss;
     private final String id;
-    private final String city_code;
     private final String city;
     private final String name;
     private final double rating;
@@ -19,14 +18,13 @@ public class HotelEvent {
     private final List<PriceOffer> priceOffers;
     private final String url;
 
-    public HotelEvent(Instant ts, String ss, String id, String city_code, String city, String name,
+    public HotelEvent(Instant ts, String ss, String id, String city, String name,
                       double rating, double lat, double lon,
                       double minPrice, double maxPrice, String category,
                       List<PriceOffer> priceOffers, String url) {
         this.ts = Instant.now();
         this.ss = ss;
         this.id = id;
-        this.city_code = city_code;
         this.city = city;
         this.name = name;
         this.rating = rating;
@@ -43,7 +41,6 @@ public class HotelEvent {
     public Instant getTs() { return ts; }
     public String getSs() { return ss; }
     public String getId() { return id; }
-    public String getCity_code() { return city_code; }
     public String getCity() { return city; }
     public String getName() { return name; }
     public double getRating() { return rating; }

@@ -13,7 +13,7 @@ public class EventInfo {
     private final double lat;
     private final double lon;
 
-    public EventInfo(String ss, String id, String name, String city,
+    public EventInfo(Instant ts, String ss, String id, String name, String city,
                      String date, String url, double lat, double lon) {
         this.ts = Instant.now();
         this.ss = ss;

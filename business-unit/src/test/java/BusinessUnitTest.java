@@ -19,10 +19,10 @@ public class BusinessUnitTest {
         unit = new BusinessUnit();
         Datamart datamart = new Datamart();
 
-        datamart.addEvent(new EventInfo("Ticketmaster", "e1", "Festival Sevilla", "Sevilla", "2025-08-01", "https://event.com", 37.3886, -5.9823));
+        datamart.addEvent(new EventInfo(Instant.now(), "Ticketmaster", "Festival Sevilla", "concierto", "Madrid",  "2025-08-01", "https://event.com", 37.3886, -5.9823));
 
-        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h1", "Hotel Festival", "Sevilla", 4.0,
-                37.389, -5.983, 90.0, 150.0, "MEDIUM", List.of()));
+        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h1", "Sevilla", "Hotel Festival", 4.0,
+                37.389, -5.983, 90.0, 150.0, "MEDIUM", List.of(), ""));
 
         // Usamos reflexión para inyectar datamart directamente
         try {

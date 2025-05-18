@@ -23,7 +23,7 @@ public class XoteloController {
     }
 
     public void fetchSaveAndPublish(String cityApiKey, String cityName) {
-        List<HotelData> hotels = provider.fetchHotels(cityApiKey);
+        List<HotelData> hotels = provider.fetchHotels(cityApiKey, cityName);
         System.out.println("Hoteles obtenidos: " + hotels.size());
 
         try (
@@ -41,8 +41,8 @@ public class XoteloController {
                 try {
                     store.saveHotel(hotel);
                     HotelEvent event = new HotelEvent(
-                            Instant.now(), "Xotelo",
-                            hotel.getId(), hotel.getName(), hotel.getCity_code() ,hotel.getCity(),
+                            hotel.getTimestamp(), "Xotelo",
+                            hotel.getId(), cityName, hotel.getName(),
                             hotel.getRating(), hotel.getLatitude(), hotel.getLongitude(),
                             hotel.getMinPrice(), hotel.getMaxPrice(),
                             hotel.getCategory().name(), hotel.getPriceOffers(), hotel.getUrl()

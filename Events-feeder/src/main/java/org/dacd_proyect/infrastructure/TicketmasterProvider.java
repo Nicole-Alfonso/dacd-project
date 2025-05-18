@@ -78,11 +78,7 @@ public class TicketmasterProvider implements EventProvider {
                     }
                 }
 
-                String source = "";
-                if (eventJson.has("promoter")) {
-                    JSONObject promoter = eventJson.getJSONObject("promoter");
-                    source = promoter.optString("name", "");
-                }
+                String ss = "Ticketmaster";
 
                 String keyword = "";
                 if (eventJson.has("classifications")) {
@@ -101,9 +97,9 @@ public class TicketmasterProvider implements EventProvider {
                         countryCode = country.optString("countryCode", " ");
                     }
                 }
-
-                Event event = new Event(source, id, name, keyword, List.of(city), countryCode,
-                        timestamp, startDateTime, urlEvent, lat, lon);
+                Instant ts = Instant.now();
+                Event event = new Event(ts, ss, id, name, keyword, city, countryCode,
+                        startDateTime, urlEvent, lat, lon);
 
                 events.add(event);
             }

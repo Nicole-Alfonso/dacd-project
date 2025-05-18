@@ -11,7 +11,7 @@ class XoteloProviderTest {
     @Test
     void shouldFetchHotelsFromApi() {
         XoteloProvider provider = new XoteloProvider();
-        List<HotelData> hotels = provider.fetchHotels("g187443");
+        List<HotelData> hotels = provider.fetchHotels("Madrid", "g187443");
 
         assertFalse(hotels.isEmpty());
         assertTrue(hotels.get(0).getId() != null);
