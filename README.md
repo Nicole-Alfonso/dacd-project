@@ -141,7 +141,15 @@ The structure of this module is:
 ---
 ### How to run the program
 
+![Running](Im1.jpg)
 
+![Running](Im2.jpg)
+
+![Running](Im3.jpg)
+
+![Running](Im4.jpg)
+
+![Running](Im5.jpg)
 
 ---
 ## 5. Resources
