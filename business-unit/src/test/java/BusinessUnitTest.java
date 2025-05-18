@@ -6,6 +6,7 @@ import org.shared.EventInfo;
 import org.shared.HotelEvent;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,7 @@ public class BusinessUnitTest {
         datamart.addEvent(new EventInfo(Instant.now(), "Ticketmaster", "Festival Sevilla", "concierto", "Madrid",  "2025-08-01", "https://event.com", 37.3886, -5.9823));
 
         datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h1", "Sevilla", "Hotel Festival", 4.0,
-                37.389, -5.983, 90.0, 150.0, "MEDIUM", List.of(), ""));
+                37.389, -5.983, 90.0, 150.0, "MEDIUM", List.of(), "", LocalDate.now(), LocalDate.now()));
 
         // Usamos reflexión para inyectar datamart directamente
         try {

@@ -1,6 +1,7 @@
 package org.shared;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public class HotelEvent {
@@ -17,11 +18,13 @@ public class HotelEvent {
     private final String category;
     private final List<PriceOffer> priceOffers;
     private final String url;
+    private final LocalDate checkIn;
+    private final LocalDate checkOut;
 
     public HotelEvent(Instant ts, String ss, String id, String city, String name,
                       double rating, double lat, double lon,
                       double minPrice, double maxPrice, String category,
-                      List<PriceOffer> priceOffers, String url) {
+                      List<PriceOffer> priceOffers, String url, LocalDate checkIn, LocalDate checkOut) {
         this.ts = Instant.now();
         this.ss = ss;
         this.id = id;
@@ -35,6 +38,8 @@ public class HotelEvent {
         this.category = category;
         this.priceOffers = priceOffers;
         this.url = url;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
     }
 
     // Getters
@@ -51,6 +56,8 @@ public class HotelEvent {
     public String getCategory() { return category; }
     public List<PriceOffer> getPriceOffers() { return priceOffers; }
     public String getUrl() { return url; }
+    public LocalDate getCheckIn() { return checkIn; }
+    public LocalDate getCheckOut() { return checkOut; }
 
     @Override
     public String toString() {

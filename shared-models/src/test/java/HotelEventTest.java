@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import org.shared.HotelEvent;
 import org.shared.PriceOffer;
@@ -15,7 +16,7 @@ public class HotelEventTest {
         HotelEvent hotel = new HotelEvent(
                 Instant.now(),"Xotelo", "h1", "Madrid", "Hotel Test",
                 4.5, 40.41, -3.70,
-                100, 130, "MEDIUM", List.of(offer), ""
+                100, 130, "MEDIUM", List.of(offer), "", LocalDate.now(), LocalDate.now()
         );
 
         assertEquals("h1", hotel.getId());
