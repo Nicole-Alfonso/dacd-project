@@ -41,11 +41,17 @@ The system:
 
 ### Datamart Design:
 
-The in-memory `Datamart` in the business unit module allows:
+The Datamart in the Business Unit module acts as a in-memory data store for events and hotels, providing efficient data retrieval and filtering for real-time and historical analytics. It has two main components: <br>
+1. Data Structures
+- `hotelesPorCiudad (Map<String, Map<String, HotelEvent>)` - Stores hotels grouped by city, allowing efficient city-based hotel lookups.
+- `eventos (List<EventInfo>)` - Stores all known events for fast retrieval and search by name.
 
-- Fast filtering by city, price, and rating
-- Real-time event tracking
-- Cross-analysis of hotel data with scheduled events
+2. Main Methods
+- `addEvent(HotelEvent)` - Adds a hotel event to the city-specific map.
+- `addEvent(EventInfo)` - Adds a general event to the event list.
+- `getEventos()` - Returns the list of all known events.
+- `findEventoByNombre(String name)` - Finds an event by name.
+- `getHotelesFiltrados(String ciudad, double eventoLat, double eventoLon, FiltroHotel filtro)` - Gets hotels filtered by city, price, category, rating, and distance.
 
 ---
 ## 4. Build and Run Instructions
@@ -97,8 +103,8 @@ Includes classes and packages like:
 **Event-Store-Builder Module:** <br>
 Subscribes to the message broker and stores events in `.events` files for later processing. Manages event serialization and file storage. <br>
 It has the following structure:
-- *core:*
-- **EventStoreBuilder:** Connects to ActiveMQ and creates subscribers to receive event messages. <br>
+- *core:* <br>
+**EventStoreBuilder:** Connects to ActiveMQ and creates subscribers to receive event messages. <br>
 - *launcher:* <br>
 **BuilderLauncher:** Starts the event listening process using EventStoreBuilder. <br>
 - *listener:* <br>
@@ -111,9 +117,16 @@ It has the following structure:
 ![Class diagram](event-store-builder.png)
 
 
-**Business-Unit Module:**
-- Processes stored events to generate user-friendly recommendations based on city, date, price, and rating.
-- Provides in-memory data structures for fast analysis.
+**Business-Unit Module:** <br> 
+Processes stored events to generate user-friendly recommendations based on city, date, price, and rating. Provides in-memory data structures for fast analysis. <br>
+The structure of this module is: 
+
+- **BusinessLauncher:** Starts the business unit and filters hotels for a given event based on user input. <br>
+- **BusinessUnit:** Manages the datamart, loads historical data, and provides filtered hotel recommendations for events. <br>
+- **Datamart:** Stores and retrieves event and hotel data, applying filters for location, price, rating, and distance. <br>
+- **EventSubscriber:** Subscribes to ActiveMQ topics for real-time event and hotel data updates. <br>
+- **HistoricalEventLoader:** Loads historical hotel events from files into the datamart.
+
 
 **Business-Api Module:**
 - Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences.
