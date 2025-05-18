@@ -5,13 +5,15 @@ import com.google.gson.JsonParser;
 
 import java.io.FileWriter;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class FileEventWriter implements EventWriter {
+
+    private static final String BASE_DIR = "eventstore";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.BASIC_ISO_DATE;
 
     @Override
     public void write(String topic, String jsonEvent) {
@@ -19,23 +21,21 @@ public class FileEventWriter implements EventWriter {
             JsonObject obj = JsonParser.parseString(jsonEvent).getAsJsonObject();
 
             String ss = obj.get("ss").getAsString();
-            String ts = obj.get("ts").getAsString();
+            Instant ts = Instant.parse(obj.get("ts").getAsString());
+            String dateStr = ts.atZone(ZoneOffset.UTC).toLocalDate().format(DATE_FORMATTER);
 
-            LocalDate date = Instant.parse(ts).atZone(ZoneOffset.UTC).toLocalDate();
-            String dateStr = date.format(DateTimeFormatter.BASIC_ISO_DATE);
+            Path dir = Path.of(BASE_DIR, topic, ss);
+            Files.createDirectories(dir);
 
-            String dirPath = "eventstore/" + topic + "/" + ss;
-            String filePath = dirPath + "/" + dateStr + ".events";
-
-            Files.createDirectories(Paths.get(dirPath));
-            try (FileWriter writer = new FileWriter(filePath, true)) {
+            Path filePath = dir.resolve(dateStr + ".events");
+            try (FileWriter writer = new FileWriter(filePath.toFile(), true)) {
                 writer.write(jsonEvent + "\n");
             }
 
             System.out.println("Evento guardado en: " + filePath);
 
         } catch (Exception e) {
-            System.err.println("Error al guardar evento: " + e.getMessage());
+            System.err.println("Error guardando evento: " + e.getMessage());
         }
     }
 }

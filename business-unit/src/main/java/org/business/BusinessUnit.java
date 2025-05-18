@@ -1,36 +1,55 @@
 package org.business;
 
-import org.example.shared.HotelEvent;
+import org.shared.EventInfo;
+import org.shared.HotelEvent;
+import org.shared.HotelFilter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 public class BusinessUnit {
-    private final Datamart datamart = new Datamart();
+    private final Datamart datamart;
+    private final HotelPriceEventRetriever retriever;
 
-    public void start() {
-        EventSubscriber.startListening(datamart);
-        HistoricalEventLoader.loadFromFolder("eventstore/HotelPrice/Xotelo", datamart);
+    public BusinessUnit(Datamart datamart) {
+        this.datamart = datamart;
+        this.retriever = new HotelPriceEventRetriever(datamart);
     }
 
-    public List<HotelEvent> getBaratos(String provincia, double precioMax) {
-        return datamart.getHotelsUnderPrice(provincia, precioMax);
-    }
+    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String ciudad, LocalDate checkIn, LocalDate checkOut, HotelFilter filtro) {
+        List<EventInfo> eventos = datamart.getEventosPorNombreYCiudad(nombreEvento, ciudad);
 
-    public List<HotelEvent> getTopValorados(String provincia, int topN) {
-        return datamart.getTopRated(provincia, topN);
-    }
+        if (eventos.isEmpty()) {
+            System.err.println("No se encontraron eventos con el nombre y ciudad especificados.");
+            return List.of();
+        }
 
-    public List<HotelEvent> getHotelesPorCategoria(String provincia, String categoria) {
-        return datamart.getHotelsByCategory(provincia, categoria);
-    }
+        // Seleccionar el evento cuya fecha sea más cercana al check-in proporcionado
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    /*public List<HotelEvent> getHotelesParaEvento(String eventName, double maxPrice) {
-        return datamart.getEventos().stream()
-                .filter(e -> e.name.toLowerCase().contains(eventName.toLowerCase()))
-                .findFirst()
-                .map(e -> datamart.getHotelsUnderPrice(e.city, maxPrice))
-                .orElse(List.of());
-    } */
+        EventInfo eventoSeleccionado = eventos.stream()
+                .min(Comparator.comparing(e -> {
+                    LocalDate eventDate = LocalDate.parse(e.getDate(), formatter);
+                    return Math.abs(ChronoUnit.DAYS.between(eventDate, checkIn));
+                }))
+                .orElse(null);
+
+        if (eventoSeleccionado == null) {
+            System.err.println("No se pudo seleccionar un evento adecuado.");
+            return List.of();
+        }
+
+        List<HotelEvent> hoteles = datamart.getHotelesFiltrados(ciudad, checkIn, checkOut, filtro, eventoSeleccionado.getLat(), eventoSeleccionado.getLon());
+
+        if (hoteles.isEmpty()) {
+            System.out.println("No se encontraron hoteles locales. Recuperando dinámicamente...");
+            hoteles = retriever.retrieveAndStore(ciudad, checkIn, checkOut, datamart);
+            hoteles = datamart.getHotelesFiltrados(ciudad, checkIn, checkOut, filtro, eventoSeleccionado.getLat(), eventoSeleccionado.getLon());
+        }
+
+        return hoteles;
+    }
 }
-
-

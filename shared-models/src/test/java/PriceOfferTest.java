@@ -1,20 +1,16 @@
-import org.example.shared.PriceOffer;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import org.shared.PriceOffer;
 
 public class PriceOfferTest {
 
     @Test
-    void testToString() {
-        PriceOffer offer = new PriceOffer("Xotelo", 89.99, "EUR");
-        assertEquals("Xotelo: 89.99 EUR", offer.toString());
-    }
+    void testPriceOfferValues() {
+        PriceOffer offer = new PriceOffer("Booking", 89.99, "EUR");
 
-    @Test
-    void testPriceAndCurrency() {
-        PriceOffer offer = new PriceOffer("Booking", 120.00, "USD");
-        assertEquals(120.00, offer.getPrice());
-        assertEquals("USD", offer.getCurrency());
+        assertEquals("Booking", offer.getProvider());
+        assertEquals(89.99, offer.getPrice());
+        assertEquals("EUR", offer.getCurrency());
+        assertTrue(offer.toString().contains("Booking"));
     }
 }

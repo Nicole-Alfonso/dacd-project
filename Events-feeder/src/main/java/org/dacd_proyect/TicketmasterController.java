@@ -3,11 +3,15 @@ package org.dacd_proyect;
 import org.dacd_proyect.application.EventProvider;
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
+import org.shared.InstantTypeAdapter;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import java.util.List;
+
 import javax.jms.*;
+import java.time.Instant;
+import java.util.List;
 
 public class TicketmasterController {
     private final EventProvider provider;
@@ -18,38 +22,46 @@ public class TicketmasterController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String location, String date) {
-        List<Event> events = provider.fetchEvents(location, date);
-        Gson gson = new Gson();
+    public void fetchSaveAndPublish(String city, String startDateTime) {
+        // Configurar Gson con el adaptador para Instant
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .create();
+
+        ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+        List<Event> events = provider.fetchEvents(city, startDateTime);
+
+        Connection connection = null;
+        Session session = null;
 
         try {
-            ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-            Connection connection = factory.createConnection();
+            connection = factory.createConnection();
             connection.start();
 
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Destination destination = session.createTopic("TicketmasterEvents");
             MessageProducer producer = session.createProducer(destination);
 
             for (Event event : events) {
                 store.saveEvent(event);
-
                 String json = gson.toJson(event);
                 TextMessage message = session.createTextMessage(json);
                 producer.send(message);
             }
 
-            session.close();
-            connection.close();
+            System.out.println("Eventos enviados a ActiveMQ para la ciudad: " + city);
 
         } catch (JMSException e) {
             System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());
+
+        } finally {
+            try {
+                if (session != null) session.close();
+                if (connection != null) connection.close();
+            } catch (JMSException e) {
+                System.err.println("Error cerrando conexión: " + e.getMessage());
+            }
         }
     }
 }
-
-
-
-
-
-

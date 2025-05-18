@@ -10,6 +10,11 @@
     <packaging>pom</packaging>
     <modules>
         <module>Hotel-feeder</module>
+        <module>shared-models</module>
+        <module>Events-feeder</module>
+        <module>business-unit</module>
+        <module>event-store-builder</module>
+        <module>business-api</module>
     </modules>
 
     <properties>

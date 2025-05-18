@@ -1,41 +1,40 @@
 package org.business;
 
+import org.business.events.EventStoreLoader;
+import org.business.events.LiveEventSubscriber;
+import org.shared.HotelFilter;
+import org.shared.HotelEvent;
+
+import java.time.LocalDate;
+import java.util.List;
+
 public class BusinessLauncher {
     public static void main(String[] args) {
-        BusinessUnit unit = new BusinessUnit();
-        unit.start();
-
-        if (args.length == 0) {
+        if (args.length < 4) {
             System.out.println("Uso:");
-            System.out.println("  baratos <provincia> <precioMax>");
-            System.out.println("  top <provincia> <N>");
-            System.out.println("  categoria <provincia> <LOW|MEDIUM|HIGH>");
+            System.out.println("  <nombreEvento> <ciudad> <checkIn> <checkOut> [categoria] [precioMax] [minRating] [distanciaMaxKm]");
             return;
         }
 
-        String comando = args[0];
+        String nombreEvento = args[0];
+        String ciudad = args[1];
+        LocalDate checkIn = LocalDate.parse(args[2]);
+        LocalDate checkOut = LocalDate.parse(args[3]);
 
-        if (comando.equalsIgnoreCase("baratos") && args.length == 3) {
-            String provincia = args[1];
-            double precio = Double.parseDouble(args[2]);
-            unit.getBaratos(provincia, precio).forEach(System.out::println);
-        } else if (comando.equalsIgnoreCase("top") && args.length == 3) {
-            String provincia = args[1];
-            int topN = Integer.parseInt(args[2]);
-            unit.getTopValorados(provincia, topN).forEach(System.out::println);
-        } else if (comando.equalsIgnoreCase("categoria") && args.length == 3) {
-            String provincia = args[1];
-            String categoria = args[2]; // LOW, MEDIUM, HIGH
-            unit.getHotelesPorCategoria(provincia, categoria).forEach(System.out::println);
+        String categoria = args.length >= 5 ? args[4] : null;
+        double precioMax = args.length >= 6 ? Double.parseDouble(args[5]) : Double.MAX_VALUE;
+        double minRating = args.length >= 7 ? Double.parseDouble(args[6]) : 0.0;
+        double distanciaMaxKm = args.length >= 8 ? Double.parseDouble(args[7]) : Double.MAX_VALUE;
 
-        /*} else if (comando.equalsIgnoreCase("evento") && args.length == 3) {
-            String nombreEvento = args[1];
-            double precioMax = Double.parseDouble(args[2]);
-            unit.getHotelesParaEvento(nombreEvento, precioMax).forEach(System.out::println);
-        } */
+        HotelFilter filtro = new HotelFilter(categoria, precioMax, minRating, distanciaMaxKm);
 
-        } else {
-            System.out.println("Comando no reconocido.");
-        }
+        Datamart datamart = new Datamart();
+        EventStoreLoader.loadAllEvents(datamart);
+        LiveEventSubscriber.startListening(datamart);
+
+        BusinessUnit unit = new BusinessUnit(datamart);
+        List<HotelEvent> hoteles = unit.getHotelesParaEvento(nombreEvento, ciudad, checkIn, checkOut, filtro);
+
+        hoteles.forEach(System.out::println);
     }
 }

@@ -1,4 +1,3 @@
-
 package org.feeder.application;
 
 import org.feeder.model.HotelData;

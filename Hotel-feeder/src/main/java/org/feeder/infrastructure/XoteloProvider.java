@@ -1,13 +1,14 @@
 package org.feeder.infrastructure;
 
-import org.feeder.application.HotelProvider;
 import com.google.gson.*;
+import org.feeder.application.HotelProvider;
 import org.feeder.model.HotelData;
-import org.example.shared.PriceOffer;
+import org.shared.PriceOffer;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,11 @@ public class XoteloProvider implements HotelProvider {
     private static final String BASE_OFFERS_URL = "https://data.xotelo.com/api/rates?";
 
     @Override
-    public List<HotelData> fetchHotels(String cityKey) {
+    public List<HotelData> fetchHotels(String cityKey, String cityName, LocalDate checkIn, LocalDate checkOut) {
         List<HotelData> hotelDataList = new ArrayList<>();
         try {
-            // Llamada a la API de hoteles
-            String hotelsUrl = BASE_HOTELS_URL + "city_key=" + cityKey + "&offset=0&limit=20";
+            String hotelsUrl = BASE_HOTELS_URL + "location_key=" + cityKey + "&offset=0&limit=5";
+
             JsonArray hotels = getJsonArrayFromUrl(hotelsUrl, "result", "list");
 
             for (JsonElement element : hotels) {
@@ -31,53 +32,48 @@ public class XoteloProvider implements HotelProvider {
                 String id = getJsonElementAsString(hotelJson, "key");
                 String name = getJsonElementAsString(hotelJson, "name");
 
-                // Ajuste para rating dentro de un array review_summary
-                JsonArray reviewArray = hotelJson.has("review_summary") && hotelJson.get("review_summary").isJsonArray()
-                        ? hotelJson.getAsJsonArray("review_summary")
-                        : new JsonArray();
-                double rating = (reviewArray.size() > 1 && reviewArray.get(1).isJsonPrimitive())
-                        ? reviewArray.get(1).getAsDouble()
-                        : 0.0;
+                JsonObject review = hotelJson.getAsJsonObject("review_summary");
+                double rating = review != null && review.has("rating") ? review.get("rating").getAsDouble() : 0.0;
 
-                // Ajuste para geo como array
-                JsonArray geoArray = hotelJson.has("geo") && hotelJson.get("geo").isJsonArray()
-                        ? hotelJson.getAsJsonArray("geo")
-                        : new JsonArray();
-                double lat = (geoArray.size() > 0 && geoArray.get(0).isJsonPrimitive())
-                        ? geoArray.get(0).getAsDouble()
-                        : 0.0;
-                double lon = (geoArray.size() > 1 && geoArray.get(1).isJsonPrimitive())
-                        ? geoArray.get(1).getAsDouble()
-                        : 0.0;
+                JsonObject geo = hotelJson.getAsJsonObject("geo");
+                double lat = geo != null && geo.has("latitude") ? geo.get("latitude").getAsDouble() : 0.0;
+                double lon = geo != null && geo.has("longitude") ? geo.get("longitude").getAsDouble() : 0.0;
 
-                String city = cityKey;
+                List<PriceOffer> offers = fetchOffers(id, checkIn, checkOut);
+                if (offers.isEmpty()) {
+                    System.out.println("Hotel sin ofertas: " + name + " (ID: " + id + ")");
+                    continue;
+                }
 
-                List<PriceOffer> offers = fetchOffers(id);
+                String url = getJsonElementAsString(hotelJson, "url");
 
-                HotelData hotel = new HotelData(id, name, city, rating, lat, lon, offers);
+                Instant ts = Instant.now();
+                HotelData hotel = new HotelData(id, cityName, name, rating, lat, lon, offers, ts, url, checkIn, checkOut);
                 hotelDataList.add(hotel);
+
+                Thread.sleep(500); // Pausa entre llamadas
             }
 
         } catch (Exception e) {
-            System.err.println("Error al obtener hoteles: " + e.getMessage());
+            System.err.println("Error general al obtener hoteles: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return hotelDataList;
     }
 
-    private List<PriceOffer> fetchOffers(String hotelKey) {
+    private List<PriceOffer> fetchOffers(String hotelKey, LocalDate checkIn, LocalDate checkOut) {
         List<PriceOffer> offers = new ArrayList<>();
         try {
-            LocalDate today = LocalDate.now();
-            LocalDate checkout = today.plusDays(3);
 
             String url = BASE_OFFERS_URL +
-                    "hotel_key=" + hotelKey +
-                    "&chk_in=" + today +
-                    "&chk_out=" + checkout;
+                         "hotel_key=" + hotelKey +
+                         "&chk_in=" + checkIn +
+                         "&chk_out=" + checkOut;
 
             JsonArray rates = getJsonArrayFromUrl(url, "result", "rates");
-            String currency = getJsonElementAsString(getJsonObjectFromUrl(url, "result"), "currency");
+            JsonObject resultObj = getJsonObjectFromUrl(url, "result");
+            String currency = getJsonElementAsString(resultObj, "currency");
 
             for (JsonElement rateElement : rates) {
                 JsonObject rate = rateElement.getAsJsonObject();
@@ -88,14 +84,16 @@ public class XoteloProvider implements HotelProvider {
 
                 offers.add(new PriceOffer(provider, finalPrice, currency));
             }
+
         } catch (Exception e) {
             System.err.println("Error al obtener ofertas para hotel " + hotelKey + ": " + e.getMessage());
         }
+
         return offers;
     }
 
+    // Utilidades JSON
 
-    // Utilidades para parseo JSON con verificación de valores nulos
     private JsonArray getJsonArrayFromUrl(String urlStr, String... path) throws Exception {
         JsonObject json = getJsonFromUrl(urlStr);
         for (int i = 0; i < path.length - 1; i++) {
@@ -118,6 +116,8 @@ public class XoteloProvider implements HotelProvider {
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setConnectTimeout(5000);
+        conn.setReadTimeout(15000);
 
         try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
             return JsonParser.parseReader(reader).getAsJsonObject();
@@ -126,33 +126,16 @@ public class XoteloProvider implements HotelProvider {
 
     private JsonObject getJsonObjectSafe(JsonObject json, String key) {
         JsonElement element = json.get(key);
-        if (element != null && !element.isJsonNull() && element.isJsonObject()) {
-            return element.getAsJsonObject();
-        }
-        return new JsonObject();
+        return (element != null && element.isJsonObject()) ? element.getAsJsonObject() : new JsonObject();
     }
 
     private String getJsonElementAsString(JsonObject jsonObject, String key) {
         JsonElement element = jsonObject.get(key);
-        if (element != null && !element.isJsonNull()) {
-            return element.getAsString();
-        }
-        return "";
+        return (element != null && element.isJsonPrimitive()) ? element.getAsString() : "";
     }
 
     private double getJsonElementAsDouble(JsonObject jsonObject, String key) {
         JsonElement element = jsonObject.get(key);
-        if (element != null && !element.isJsonNull()) {
-            return element.getAsDouble();
-        }
-        return 0.0;
-    }
-
-    private double getJsonElementAsDouble(JsonObject jsonObject, String parentKey, String childKey) {
-        JsonObject parentObject = jsonObject.getAsJsonObject(parentKey);
-        if (parentObject != null && !parentObject.isJsonNull()) {
-            return getJsonElementAsDouble(parentObject, childKey);
-        }
-        return 0.0;
+        return (element != null && element.isJsonPrimitive()) ? element.getAsDouble() : 0.0;
     }
 }

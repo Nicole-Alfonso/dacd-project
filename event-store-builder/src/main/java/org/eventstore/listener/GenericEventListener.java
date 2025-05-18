@@ -2,9 +2,7 @@ package org.eventstore.listener;
 
 import org.eventstore.writer.EventWriter;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 public class GenericEventListener implements MessageListener {
 
@@ -18,12 +16,12 @@ public class GenericEventListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
+        if (message instanceof TextMessage textMessage) {
             try {
-                String json = ((TextMessage) message).getText();
+                String json = textMessage.getText();
                 writer.write(topic, json);
             } catch (Exception e) {
-                System.err.println("Error procesando mensaje: " + e.getMessage());
+                System.err.println("Error procesando mensaje del topic [" + topic + "]: " + e.getMessage());
             }
         }
     }
