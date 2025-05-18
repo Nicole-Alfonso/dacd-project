@@ -2,7 +2,6 @@
 package org.dacd_proyect.domain.model;
 
 import java.time.Instant;
-import java.util.List;
 
 public class Event {
     private final String ss;
