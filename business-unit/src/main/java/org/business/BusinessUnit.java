@@ -2,8 +2,9 @@ package org.business;
 
 import org.shared.EventInfo;
 import org.shared.HotelEvent;
+import org.shared.FiltroHotel;
+
 import java.util.List;
-import java.util.Optional;
 
 public class BusinessUnit {
     private final Datamart datamart;
@@ -13,38 +14,22 @@ public class BusinessUnit {
     }
 
     public void start() {
-        EventSubscriber.startListening(datamart);
+        // Primero cargar histórico, luego empezar a escuchar eventos en tiempo real
         HistoricalEventLoader.loadFromFolder("eventstore/HotelPrice/Xotelo", datamart);
+        EventSubscriber.startListening(datamart);
     }
 
-    public List<HotelEvent> getHotelesFiltrados(String nombreEvento, String categoria,
-                                                double maxPrecio, double minRating, double maxDistanciaKm) {
+    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, FiltroHotel filtro) {
         return datamart.findEventoByNombre(nombreEvento)
-                .map(e -> datamart.getHotelesFiltrados(e.getCity(), e.getLat(), e.getLon(), maxPrecio, categoria, minRating, maxDistanciaKm))
+                .map(evento -> datamart.getHotelesFiltrados(
+                        evento.getCity(),
+                        evento.getLat(),
+                        evento.getLon(),
+                        filtro))
                 .orElse(List.of());
     }
 
-    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String categoria, double maxPrecio, double minRating, double maxDistanciaKm) {
-        Optional<EventInfo> eventoOpt = datamart.getEventos().stream()
-                .filter(e -> e.getName().equalsIgnoreCase(nombreEvento))
-                .findFirst();
-
-        if (eventoOpt.isEmpty()) {
-            System.out.println("⚠ Evento no encontrado: " + nombreEvento);
-            return List.of();
-        }
-
-        EventInfo evento = eventoOpt.get();
-
-        return datamart.getHotelesFiltrados(
-                evento.getCity(),
-                evento.getLat(),
-                evento.getLon(),
-                maxPrecio,
-                categoria,
-                minRating,
-                maxDistanciaKm
-        );
+    public List<EventInfo> getEventosDisponibles() {
+        return datamart.getEventos();
     }
-
 }

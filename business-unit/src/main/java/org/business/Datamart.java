@@ -1,19 +1,20 @@
 package org.business;
 
 import org.shared.EventInfo;
+import org.shared.FiltroHotel;
 import org.shared.HotelEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Datamart {
-    private final Map<String, List<HotelEvent>> hotelesPorCiudad = new HashMap<>();
+    private final Map<String, Map<String, HotelEvent>> hotelesPorCiudad = new HashMap<>();
     private final List<EventInfo> eventos = new ArrayList<>();
 
     public synchronized void addEvent(HotelEvent event) {
         hotelesPorCiudad
-                .computeIfAbsent(event.getCity().toLowerCase(), k -> new ArrayList<>())
-                .add(event);
+                .computeIfAbsent(event.getCity().toLowerCase(), k -> new HashMap<>())
+                .put(event.getName(), event);
     }
 
     public synchronized void addEvent(EventInfo event) {
@@ -30,16 +31,16 @@ public class Datamart {
                 .findFirst();
     }
 
-    public List<HotelEvent> getHotelesFiltrados(String ciudad, double eventoLat, double eventoLon,
-                                                double maxPrecio, String categoria, double minRating, double maxDistKm) {
-        return hotelesPorCiudad.getOrDefault(ciudad.toLowerCase(), Collections.emptyList())
-                .stream()
-                .filter(h -> h.getMinPrice() <= maxPrecio)
-                .filter(h -> categoria == null || h.getCategory().equalsIgnoreCase(categoria))
-                .filter(h -> h.getRating() >= minRating)
-                .filter(h -> calcularDistanciaKm(eventoLat, eventoLon, h.getLat(), h.getLon()) <= maxDistKm)
+    public List<HotelEvent> getHotelesFiltrados(String ciudad, double eventoLat, double eventoLon, FiltroHotel filtro) {
+        return hotelesPorCiudad.getOrDefault(ciudad.toLowerCase(), Map.of())
+                .values().stream()
+                .filter(h -> h.getMinPrice() <= filtro.getMaxPrecio())
+                .filter(h -> filtro.getCategoria() == null || h.getCategory().equalsIgnoreCase(filtro.getCategoria()))
+                .filter(h -> h.getRating() >= filtro.getMinRating())
+                .filter(h -> calcularDistanciaKm(eventoLat, eventoLon, h.getLat(), h.getLon()) <= filtro.getMaxDistanciaKm())
                 .collect(Collectors.toList());
     }
+
 
     private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371; // km
