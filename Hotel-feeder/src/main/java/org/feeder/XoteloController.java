@@ -10,7 +10,9 @@ import org.shared.HotelEvent;
 import javax.jms.*;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.shared.InstantTypeAdapter;
+import org.shared.LocalDateTypeAdapter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class XoteloController {
@@ -22,8 +24,8 @@ public class XoteloController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String cityApiKey, String cityName) {
-        List<HotelData> hotels = provider.fetchHotels(cityApiKey, cityName);
+    public void fetchSaveAndPublish(String cityApiKey, String cityName, LocalDate checkIn, LocalDate checkOut) {
+        List<HotelData> hotels = provider.fetchHotels(cityApiKey, cityName, checkIn, checkOut);
         System.out.println("Hoteles obtenidos: " + hotels.size());
 
         try (
@@ -35,6 +37,7 @@ public class XoteloController {
 
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                    .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                     .create();
 
             for (HotelData hotel : hotels) {
@@ -45,7 +48,8 @@ public class XoteloController {
                             hotel.getId(), cityName, hotel.getName(),
                             hotel.getRating(), hotel.getLatitude(), hotel.getLongitude(),
                             hotel.getMinPrice(), hotel.getMaxPrice(),
-                            hotel.getCategory().name(), hotel.getPriceOffers(), hotel.getUrl()
+                            hotel.getCategory().name(), hotel.getPriceOffers(), hotel.getUrl(),
+                            hotel.getCheckIn(), hotel.getCheckOut()
                     );
 
                     String json = gson.toJson(event);

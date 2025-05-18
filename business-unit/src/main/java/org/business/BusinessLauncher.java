@@ -1,5 +1,7 @@
 package org.business;
 
+import org.shared.FiltroHotel;
+
 public class BusinessLauncher {
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -14,10 +16,13 @@ public class BusinessLauncher {
         double minRating = args.length >= 4 ? Double.parseDouble(args[3]) : 0.0;
         double maxDistancia = args.length >= 5 ? Double.parseDouble(args[4]) : Double.MAX_VALUE;
 
+        FiltroHotel filtro = new FiltroHotel(categoria, maxPrecio, minRating, maxDistancia);
+
         BusinessUnit unit = new BusinessUnit();
         unit.start();
 
-        unit.getHotelesFiltrados(nombreEvento, categoria, maxPrecio, minRating, maxDistancia)
+        unit.getHotelesParaEvento(nombreEvento, filtro)
                 .forEach(System.out::println);
     }
 }
+

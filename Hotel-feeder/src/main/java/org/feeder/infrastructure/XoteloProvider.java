@@ -19,7 +19,7 @@ public class XoteloProvider implements HotelProvider {
     private static final String BASE_OFFERS_URL = "https://data.xotelo.com/api/rates?";
 
     @Override
-    public List<HotelData> fetchHotels(String cityKey, String cityName) {
+    public List<HotelData> fetchHotels(String cityKey, String cityName, LocalDate checkIn, LocalDate checkOut) {
         List<HotelData> hotelDataList = new ArrayList<>();
         try {
             String hotelsUrl = BASE_HOTELS_URL + "location_key=" + cityKey + "&offset=0&limit=5";
@@ -39,11 +39,16 @@ public class XoteloProvider implements HotelProvider {
                 double lat = geo != null && geo.has("latitude") ? geo.get("latitude").getAsDouble() : 0.0;
                 double lon = geo != null && geo.has("longitude") ? geo.get("longitude").getAsDouble() : 0.0;
 
-                List<PriceOffer> offers = fetchOffers(id);
+                List<PriceOffer> offers = fetchOffers(id, checkIn, checkOut);
+                if (offers.isEmpty()) {
+                    System.out.println("Hotel sin ofertas: " + name + " (ID: " + id + ")");
+                    continue;
+                }
+
                 String url = getJsonElementAsString(hotelJson, "url");
 
                 Instant ts = Instant.now();
-                HotelData hotel = new HotelData(id, cityName, name, rating, lat, lon, offers, ts, url);
+                HotelData hotel = new HotelData(id, cityName, name, rating, lat, lon, offers, ts, url, checkIn, checkOut);
                 hotelDataList.add(hotel);
 
                 Thread.sleep(500); // Pausa entre llamadas
@@ -57,16 +62,14 @@ public class XoteloProvider implements HotelProvider {
         return hotelDataList;
     }
 
-    private List<PriceOffer> fetchOffers(String hotelKey) {
+    private List<PriceOffer> fetchOffers(String hotelKey, LocalDate checkIn, LocalDate checkOut) {
         List<PriceOffer> offers = new ArrayList<>();
         try {
-            LocalDate today = LocalDate.now();
-            LocalDate checkout = today.plusDays(3);
 
             String url = BASE_OFFERS_URL +
                          "hotel_key=" + hotelKey +
-                         "&chk_in=" + today +
-                         "&chk_out=" + checkout;
+                         "&chk_in=" + checkIn +
+                         "&chk_out=" + checkOut;
 
             JsonArray rates = getJsonArrayFromUrl(url, "result", "rates");
             JsonObject resultObj = getJsonObjectFromUrl(url, "result");

@@ -5,6 +5,7 @@ import org.shared.PriceOffer;
 
 import java.sql.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +34,7 @@ class HotelSqliteStoreTest {
                 List.of(
                         new PriceOffer("ProviderA", 90.0, "EUR"),
                         new PriceOffer("ProviderB", 120.0, "EUR")
-                ), Instant.now(), ""
+                ), Instant.now(), "", LocalDate.now(), LocalDate.now()
         );
 
         store.saveHotel(hotel);

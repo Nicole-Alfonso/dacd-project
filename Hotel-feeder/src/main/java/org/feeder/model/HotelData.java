@@ -3,6 +3,7 @@ package org.feeder.model;
 import org.shared.PriceOffer;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public class HotelData {
@@ -21,9 +22,12 @@ public class HotelData {
     private final PriceCategory category;
     private final Instant timestamp;
     private final String url;
+    private final LocalDate checkIn;
+    private final LocalDate checkOut;
 
     public HotelData(String id, String city, String name, double rating,
-                     double latitude, double longitude, List<PriceOffer> priceOffers, Instant timestamp, String url) {
+                     double latitude, double longitude, List<PriceOffer> priceOffers,
+                     Instant timestamp, String url, LocalDate checkIn, LocalDate checkOut) {
         this.id = id;
         this.city = city;
         this.name = name;
@@ -33,7 +37,8 @@ public class HotelData {
         this.priceOffers = priceOffers;
         this.timestamp = timestamp;
         this.url = url;
-
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
         this.minPrice = priceOffers.stream().mapToDouble(PriceOffer::getPrice).min().orElse(0);
         this.maxPrice = priceOffers.stream().mapToDouble(PriceOffer::getPrice).max().orElse(0);
 
@@ -58,6 +63,8 @@ public class HotelData {
     public PriceCategory getCategory() { return category; }
     public Instant getTimestamp() { return timestamp; }
     public String getUrl() { return url; }
+    public LocalDate getCheckIn() { return checkIn; }
+    public LocalDate getCheckOut() { return checkOut; }
 
     public String toString() {
         return String.format("%s [%s] %.1f⭐ (%s) %.2f - %.2f\n%s",
