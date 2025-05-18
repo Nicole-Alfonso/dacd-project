@@ -66,14 +66,15 @@ Event-Feeder Module:
 - Publishes this data to the event.Event topic on ActiveMQ.
 - Includes classes such as TicketmasterController and Main, and three packages: application (EventProvider and EventStore), domain.model (Event) and infrastructure (EventSqliteStore and TicketmasterProvider).
 
-  (foto diagrama)
+![Class diagram](Captura%20de%20pantalla%202025-05-18%20140651.png)
 
 Hotel-Feeder Module:
 - Retrieves hotel and pricing data from the Xotelo API.
 - Publishes this data to the hotel.Hotel topic on ActiveMQ.
 - Includes classes like XoteloController and Main, and three packages: application (HotelProvider and HotelStore), model (HotelData) and infrastructure (XoteloProvider and HotelSqliteStore).
 
-  (foto diagrama)
+![Class diagram](Captura%20de%20pantalla%202025-05-18%20180250.png)
+
 
 Event-Store-Builder Module:
 - Subscribes to the message broker and stores events in .events files for later processing.
@@ -192,11 +193,11 @@ ActiveMQ - Client library to interact with Apache ActiveMQ message broker.
 ## 6. Future improvements
 Some future improvements for this Hotel Recommender project could be: 
 
-1. Enhanced Error Handling and Logging
+1. Enhanced Error Handling and Logging:<br>
 Implement more robust error handling mechanisms and comprehensive logging to improve the reliability and the debugging.
 
-2. Integration with Additional APIs
+2. Integration with Additional APIs:<br>
 Expand the system's capabilities integrating other relevant APIs to provide a broader range of data.
 
-3. User Interface Development
+3. User Interface Development:<br>
 Develop a user-friendly interface to enhance user experience and accessibility.
