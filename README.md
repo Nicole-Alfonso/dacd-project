@@ -64,28 +64,34 @@ The in-memory `Datamart` in the business unit module allows:
 Event-Feeder Module:
 - Retrieves event data from the Ticketmaster API.
 - Publishes this data to the event.Event topic on ActiveMQ.
-- Includes classes like EventController, TicketmasterProvider, and EventStore.
+- Includes classes such as TicketmasterController and Main, and three packages: application (EventProvider and EventStore), domain.model (Event) and infrastructure (EventSqliteStore and TicketmasterProvider).
 
   (foto diagrama)
 
 Hotel-Feeder Module:
 - Retrieves hotel and pricing data from the Xotelo API.
 - Publishes this data to the hotel.Hotel topic on ActiveMQ.
-- Includes classes like XoteloController, HotelProvider, and HotelStore.
+- Includes classes like XoteloController and Main, and three packages: application (HotelProvider and HotelStore), model (HotelData) and infrastructure (XoteloProvider and HotelSqliteStore).
 
   (foto diagrama)
 
-Event Store Module:
+Event-Store-Builder Module:
 - Subscribes to the message broker and stores events in .events files for later processing.
 - Manages event serialization and file storage.
 
-Business Unit Module:
+Business-Unit Module:
 - Processes stored events to generate user-friendly recommendations based on city, date, price, and rating.
 - Provides in-memory data structures for fast analysis.
 
-User Interface Module: 
-- Provides a simple CLI for interacting with the in-memory datamart and viewing hotel recommendations.
-- Handles user inputs and presents filtered results.
+Business-Api Module:
+- Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences.
+- It exposes HTTP endpoints for filtering and retrieving hotel recommendations, bridging the gap between the core business logic in the Business Unit and user-facing applications.
+  
+Shared-Model Module: 
+- Is responsible for providing common data structures and utilities that are used across the various project modules, including Event-Feeder, Hotel-Feeder, and Business-Unit.
+
+
+> Each module has a package called test, which includes some tests to verify the correct operation of the module.
 
 ---
 ### How to run the program
@@ -93,4 +99,104 @@ User Interface Module:
 
 
 ---
-## 5. Resources used
+## 5. Resources
+
+The project was developed using IntelliJ IDEA, a powerful and highly integrated IDE widely adopted in the software industry. It provides seamless integration with various tools and technologies, streamlining the development process. For version control, Git was used to meticulously track source code changes, while GitHub served as the cloud-based repository for hosting the project's codebase.
+
+For dependency management and build automation, Maven was utilized, simplifying the compilation, testing, and packaging of the project. The following dependencies were included:
+
+Gson - Library to convert Java objects to JSON.
+```
+<dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.1</version>
+</dependency>
+```
+
+JUnit - Framework for writing and running unit tests in Java.
+```
+<dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope> 
+</dependency>
+```
+
+OkHttp3 - HTTP client for making network requests efficiently.
+```
+<dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.3</version>
+</dependency>
+```
+
+SQLite JDBC - JDBC driver to connect Java applications to SQLite databases.
+```
+<dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.36.0.3</version>
+</dependency>
+```
+
+Json - Library for parsing, generating, and manipulating JSON data.
+```
+<dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220320</version>
+</dependency>
+```
+
+Jsoup - HTML parser for extracting and manipulating data from web pages.
+```
+<dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.3</version>
+</dependency>
+```
+
+Apache Spark - Lightweight web framework for creating web applications and APIs.
+```        
+<dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.9.4</version>
+</dependency>
+```
+
+
+SLF4J - Simple logging facade to plug in various logging frameworks.
+```
+<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
+</dependency>
+```
+
+ActiveMQ - Client library to interact with Apache ActiveMQ message broker.
+```
+<dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.18.4</version>
+</dependency>
+```
+
+---
+## 6. Future improvements
+Some future improvements for this Hotel Recommender project could be: 
+
+1. Enhanced Error Handling and Logging
+Implement more robust error handling mechanisms and comprehensive logging to improve the reliability and the debugging.
+
+2. Integration with Additional APIs
+Expand the system's capabilities integrating other relevant APIs to provide a broader range of data.
+
+3. User Interface Development
+Develop a user-friendly interface to enhance user experience and accessibility.
