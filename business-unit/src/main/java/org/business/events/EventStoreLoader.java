@@ -31,9 +31,9 @@ public class EventStoreLoader {
                             String line;
                             while ((line = reader.readLine()) != null) {
                                 HotelEvent event = gson.fromJson(line, HotelEvent.class);
-                                datamart.addEvent(event);
+                                datamart.addHotel(event);
                             }
-                            System.out.println("✔ HotelEvents cargados: " + file);
+                            System.out.println("HotelEvents cargados: " + file);
                         } catch (Exception e) {
                             System.err.println("Error en " + file + ": " + e.getMessage());
                         }

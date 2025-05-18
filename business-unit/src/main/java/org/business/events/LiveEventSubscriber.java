@@ -34,10 +34,10 @@ public class LiveEventSubscriber {
                 if (msg instanceof TextMessage text) {
                     try {
                         HotelEvent hotelEvent = gson.fromJson(text.getText(), HotelEvent.class);
-                        datamart.addEvent(hotelEvent);
-                        System.out.println("📩 HotelEvent recibido: " + hotelEvent.getName());
+                        datamart.addHotel(hotelEvent);
+                        System.out.println("HotelEvent recibido: " + hotelEvent.getName());
                     } catch (Exception e) {
-                        System.err.println("❌ Error HotelEvent: " + e.getMessage());
+                        System.err.println("Error HotelEvent: " + e.getMessage());
                     }
                 }
             });

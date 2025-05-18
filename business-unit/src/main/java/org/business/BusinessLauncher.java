@@ -3,34 +3,38 @@ package org.business;
 import org.business.events.EventStoreLoader;
 import org.business.events.LiveEventSubscriber;
 import org.shared.HotelFilter;
+import org.shared.HotelEvent;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public class BusinessLauncher {
     public static void main(String[] args) {
-        if (args.length < 1) {
+        if (args.length < 4) {
             System.out.println("Uso:");
-            System.out.println("  evento <nombreEvento> [categoria] [precioMax] [minRating] [distanciaMaxKm]");
+            System.out.println("  <nombreEvento> <ciudad> <checkIn> <checkOut> [categoria] [precioMax] [minRating] [distanciaMaxKm]");
             return;
         }
 
-        // Parsear argumentos
         String nombreEvento = args[0];
-        String categoria = args.length >= 2 ? args[1] : null;
-        double maxPrecio = args.length >= 3 ? Double.parseDouble(args[2]) : Double.MAX_VALUE;
-        double minRating = args.length >= 4 ? Double.parseDouble(args[3]) : 0.0;
-        double maxDistancia = args.length >= 5 ? Double.parseDouble(args[4]) : Double.MAX_VALUE;
+        String ciudad = args[1];
+        LocalDate checkIn = LocalDate.parse(args[2]);
+        LocalDate checkOut = LocalDate.parse(args[3]);
 
-        HotelFilter filtro = new HotelFilter(categoria, maxPrecio, minRating, maxDistancia);
+        String categoria = args.length >= 5 ? args[4] : null;
+        double precioMax = args.length >= 6 ? Double.parseDouble(args[5]) : Double.MAX_VALUE;
+        double minRating = args.length >= 7 ? Double.parseDouble(args[6]) : 0.0;
+        double distanciaMaxKm = args.length >= 8 ? Double.parseDouble(args[7]) : Double.MAX_VALUE;
 
-        // Inicialización completa
+        HotelFilter filtro = new HotelFilter(categoria, precioMax, minRating, distanciaMaxKm);
+
         Datamart datamart = new Datamart();
-
-        // 1. Cargar históricos
         EventStoreLoader.loadAllEvents(datamart);
-
-        // 2. Suscribirse a eventos en tiempo real
         LiveEventSubscriber.startListening(datamart);
 
-        // 3. Ejecutar lógica de negocio
         BusinessUnit unit = new BusinessUnit(datamart);
+        List<HotelEvent> hoteles = unit.getHotelesParaEvento(nombreEvento, ciudad, checkIn, checkOut, filtro);
+
+        hoteles.forEach(System.out::println);
     }
 }

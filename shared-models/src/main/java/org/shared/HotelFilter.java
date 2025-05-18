@@ -2,19 +2,19 @@ package org.shared;
 
 public class HotelFilter {
     private String categoria;
-    private double maxPrecio;
+    private double precioMax;
     private double minRating;
-    private double maxDistanciaKm;
+    private double distanciaMaxKm;
 
-    public HotelFilter(String categoria, double maxPrecio, double minRating, double maxDistanciaKm) {
+    public HotelFilter(String categoria, double precioMax, double minRating, double distanciaMaxKm) {
         this.categoria = categoria;
-        this.maxPrecio = maxPrecio;
+        this.precioMax = precioMax;
         this.minRating = minRating;
-        this.maxDistanciaKm = maxDistanciaKm;
+        this.distanciaMaxKm = distanciaMaxKm;
     }
 
     public String getCategoria() { return categoria; }
-    public double getMaxPrecio() { return maxPrecio; }
+    public double getPrecioMax() { return precioMax; }
     public double getMinRating() { return minRating; }
-    public double getMaxDistanciaKm() { return maxDistanciaKm; }
+    public double getDistanciaMaxKm() { return distanciaMaxKm; }
 }

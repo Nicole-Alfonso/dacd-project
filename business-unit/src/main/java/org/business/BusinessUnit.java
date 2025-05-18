@@ -2,39 +2,48 @@ package org.business;
 
 import org.shared.EventInfo;
 import org.shared.HotelEvent;
+import org.shared.HotelFilter;
+
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class BusinessUnit {
-
     private final Datamart datamart;
-    private final HotelPriceEventRetriever hotelRetriever;
+    private final HotelPriceEventRetriever retriever;
 
     public BusinessUnit(Datamart datamart) {
         this.datamart = datamart;
-        this.hotelRetriever = new HotelPriceEventRetriever(datamart);
+        this.retriever = new HotelPriceEventRetriever(datamart);
     }
 
-    public List<HotelEvent> getHotelsNearEvent(String concertId, LocalDate eventDate, int nights, double minRating) {
-        Optional<EventInfo> concertOpt = datamart.findEventById(concertId);
-        if (concertOpt.isEmpty()) return List.of();
+    public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String ciudad, LocalDate checkIn, LocalDate checkOut, HotelFilter filtro) {
+        List<EventInfo> eventos = datamart.getEventosPorNombreYCiudad(nombreEvento, ciudad);
 
-        EventInfo concert = concertOpt.get();
-        String city = concert.getCity();
-        LocalDate checkIn = eventDate;
-        LocalDate checkOut = checkIn.plusDays(nights);
-
-        List<HotelEvent> hotelEvents = datamart.findHotelEvents(city, checkIn, checkOut);
-
-        if (hotelEvents.isEmpty()) {
-            System.out.println("Buscando hoteles dinámicamente...");
-            hotelEvents = hotelRetriever.retrieveAndStore(city, checkIn, checkOut);
+        if (eventos.isEmpty()) {
+            System.err.println("No se encontraron eventos con el nombre y ciudad especificados.");
+            return List.of();
         }
 
-        return hotelEvents.stream()
-                .filter(h -> h.getRating() >= minRating)
-                .collect(Collectors.toList());
+        // Seleccionar el evento cuya fecha sea más cercana al check-in proporcionado
+        EventInfo eventoSeleccionado = eventos.stream()
+                .min(Comparator.comparing(e -> Math.abs(ChronoUnit.DAYS.between(e.getDate(), checkIn))))
+                .orElse(null);
+
+        if (eventoSeleccionado == null) {
+            System.err.println("No se pudo seleccionar un evento adecuado.");
+            return List.of();
+        }
+
+        List<HotelEvent> hoteles = datamart.getHotelesFiltrados(ciudad, checkIn, checkOut, filtro, eventoSeleccionado.getLat(), eventoSeleccionado.getLon());
+
+        if (hoteles.isEmpty()) {
+            System.out.println("No se encontraron hoteles locales. Recuperando dinámicamente...");
+            hoteles = retriever.retrieveAndStore(ciudad, checkIn, checkOut, datamart);
+            hoteles = datamart.getHotelesFiltrados(ciudad, checkIn, checkOut, filtro, eventoSeleccionado.getLat(), eventoSeleccionado.getLon());
+        }
+
+        return hoteles;
     }
 }
