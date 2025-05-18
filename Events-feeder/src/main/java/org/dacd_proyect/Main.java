@@ -4,9 +4,6 @@ import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.infrastructure.TicketmasterProvider;
 import org.dacd_proyect.infrastructure.EventSqliteStore;
 
-import java.util.List;
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -15,16 +12,16 @@ public class Main {
         }
 
         String apiKey = args[0];
-        List<String> cities = Arrays.asList("Madrid");
+        String city = "Madrid";
         String startDateTime = "2026-05-30T00:00:00Z";
 
         TicketmasterProvider provider = new TicketmasterProvider(apiKey);
         EventStore store = new EventSqliteStore("jdbc:sqlite:events.db");
 
         TicketmasterController controller = new TicketmasterController(provider, store);
-        controller.fetchSaveAndPublish(cities, startDateTime);
+        controller.fetchSaveAndPublish(city, startDateTime);
 
-        System.out.println("Eventos cargados para " + cities + " el día " + startDateTime);
+        System.out.println("Eventos cargados para " + city + " el día " + startDateTime);
     }
 }
 

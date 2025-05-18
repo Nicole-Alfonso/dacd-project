@@ -18,7 +18,7 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web -->
+        <!-- Spring Boot Web (ya incluye SLF4J + Logback) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -40,6 +40,7 @@
             <version>5.18.6</version>
         </dependency>
 
+        <!-- Módulos propios -->
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>shared-models</artifactId>
@@ -55,10 +56,15 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.11</version>
+            <version>1.5.6</version> <!-- Esta versión contiene StatusPrinter2 -->
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.5.6</version>
         </dependency>
 
-    </dependencies>
 
+    </dependencies>
 
 </project>

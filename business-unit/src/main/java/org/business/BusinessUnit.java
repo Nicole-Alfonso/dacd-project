@@ -5,6 +5,7 @@ import org.shared.HotelEvent;
 import org.shared.HotelFilter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -27,8 +28,13 @@ public class BusinessUnit {
         }
 
         // Seleccionar el evento cuya fecha sea más cercana al check-in proporcionado
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         EventInfo eventoSeleccionado = eventos.stream()
-                .min(Comparator.comparing(e -> Math.abs(ChronoUnit.DAYS.between(e.getDate(), checkIn))))
+                .min(Comparator.comparing(e -> {
+                    LocalDate eventDate = LocalDate.parse(e.getDate(), formatter);
+                    return Math.abs(ChronoUnit.DAYS.between(eventDate, checkIn));
+                }))
                 .orElse(null);
 
         if (eventoSeleccionado == null) {

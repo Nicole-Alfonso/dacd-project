@@ -5,16 +5,20 @@ import org.shared.EventInfo;
 import org.shared.HotelEvent;
 import org.shared.InstantTypeAdapter;
 import org.business.Datamart;
+import org.shared.LocalDateTypeAdapter;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 public class EventStoreLoader {
 
     private static final Gson gson = new GsonBuilder()
             .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
             .create();
 
     public static void loadAllEvents(Datamart datamart) {
