@@ -155,17 +155,22 @@ Structure of Shared-Model module:
 > Packages are not included on the class diagrams.
 ---
 ### How to run the program
-
-![Running](im1.jpg)
-
-![Running](im2.jpg)
-
+Run BuilderLauncher
 ![Running](Im3.jpg)
 
+Run Hotel-feeder Main with citykey in arguments and the app suggests to enter dates to call offers
 ![Running](Im4.jpg)
 
+Run Hotel-feeder Main with citykey and dates in arguments
 ![Running](Im5.jpg)
 
+Run BuisnessLauncher, if no enough arguments given
+![Running](im2.jpg)
+
+Run BuisnessLauncher with correct arguments
+![Running](im1.jpg)
+
+Run ApiApplicationLauncher. Web page runs on port 8080 (http://localhost:8080)
 ![Running](Im6.jpg)
 
 ---
