@@ -166,6 +166,8 @@ Structure of Shared-Model module:
 
 ![Running](Im5.jpg)
 
+![Running](Im6.jpg)
+
 ---
 ## 5. Resources
 
