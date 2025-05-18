@@ -8,6 +8,7 @@ import org.shared.PriceOffer;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class XoteloProvider implements HotelProvider {
     private static final String BASE_OFFERS_URL = "https://data.xotelo.com/api/rates?";
 
     @Override
-    public List<HotelData> fetchHotels(String cityKey) {
+    public List<HotelData> fetchHotels(String cityKey, String cityName) {
         List<HotelData> hotelDataList = new ArrayList<>();
         try {
             String hotelsUrl = BASE_HOTELS_URL + "location_key=" + cityKey + "&offset=0&limit=5";
@@ -39,12 +40,13 @@ public class XoteloProvider implements HotelProvider {
                 double lon = geo != null && geo.has("longitude") ? geo.get("longitude").getAsDouble() : 0.0;
 
                 List<PriceOffer> offers = fetchOffers(id);
+                String url = getJsonElementAsString(hotelJson, "url");
 
-                HotelData hotel = new HotelData(id, name, cityKey, rating, lat, lon, offers);
+                Instant ts = Instant.now();
+                HotelData hotel = new HotelData(id, cityName, name, rating, lat, lon, offers, ts, url);
                 hotelDataList.add(hotel);
 
-                // Pausa breve para no saturar la API
-                Thread.sleep(500);
+                Thread.sleep(500); // Pausa entre llamadas
             }
 
         } catch (Exception e) {

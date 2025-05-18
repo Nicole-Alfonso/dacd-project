@@ -4,5 +4,6 @@ import org.feeder.model.HotelData;
 import java.util.List;
 
 public interface HotelProvider {
-    List<HotelData> fetchHotels(String provinceApiKey);
+    List<HotelData> fetchHotels(String cityKey, String cityName);
 }
+

@@ -53,12 +53,9 @@ public class HotelSqliteStore implements HotelStore {
     public void saveHotel(HotelData hotel) {
         try (Connection conn = DriverManager.getConnection(dbUrl)) {
             conn.setAutoCommit(false);
-
             insertOrUpdateHotel(conn, hotel);
             insertOffersIfNotExists(conn, hotel);
-
             conn.commit();
-
         } catch (SQLException e) {
             System.err.println("Error guardando hotel: " + e.getMessage());
         }

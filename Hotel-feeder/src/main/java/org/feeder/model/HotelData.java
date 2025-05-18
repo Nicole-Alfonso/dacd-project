@@ -1,7 +1,8 @@
 package org.feeder.model;
 
 import org.shared.PriceOffer;
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 import java.util.List;
 
 public class HotelData {
@@ -9,8 +10,8 @@ public class HotelData {
     public enum PriceCategory { LOW, MEDIUM, HIGH }
 
     private final String id;
-    private final String name;
     private final String city;
+    private final String name;
     private final double rating;
     private final double latitude;
     private final double longitude;
@@ -18,18 +19,20 @@ public class HotelData {
     private final double minPrice;
     private final double maxPrice;
     private final PriceCategory category;
-    private final LocalDateTime timestamp;
+    private final Instant timestamp;
+    private final String url;
 
-    public HotelData(String id, String name, String city, double rating,
-                     double latitude, double longitude, List<PriceOffer> priceOffers) {
+    public HotelData(String id, String city, String name, double rating,
+                     double latitude, double longitude, List<PriceOffer> priceOffers, Instant timestamp, String url) {
         this.id = id;
-        this.name = name;
         this.city = city;
+        this.name = name;
         this.rating = rating;
         this.latitude = latitude;
         this.longitude = longitude;
         this.priceOffers = priceOffers;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = timestamp;
+        this.url = url;
 
         this.minPrice = priceOffers.stream().mapToDouble(PriceOffer::getPrice).min().orElse(0);
         this.maxPrice = priceOffers.stream().mapToDouble(PriceOffer::getPrice).max().orElse(0);
@@ -53,7 +56,8 @@ public class HotelData {
     public double getMinPrice() { return minPrice; }
     public double getMaxPrice() { return maxPrice; }
     public PriceCategory getCategory() { return category; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public Instant getTimestamp() { return timestamp; }
+    public String getUrl() { return url; }
 
     public String toString() {
         return String.format("%s [%s] %.1f⭐ (%s) %.2f - %.2f\n%s",

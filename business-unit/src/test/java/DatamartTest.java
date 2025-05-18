@@ -17,16 +17,16 @@ public class DatamartTest {
         datamart = new Datamart();
 
         // Hotel 1: cerca y barato
-        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h1", "Hotel Barato", "Sevilla", 4.2,
-                37.3886, -5.9823, 75.0, 120.0, "LOW", List.of()));
+        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h1", "Sevilla", "Hotel Barato", 4.2,
+                37.3886, -5.9823, 75.0, 120.0, "LOW", List.of(), ""));
 
         // Hotel 2: caro y lejos
-        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h2", "Hotel Caro", "Sevilla", 4.8,
-                37.0, -6.0, 200.0, 250.0, "HIGH", List.of()));
+        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h2", "Sevilla", "Hotel Caro", 4.8,
+                37.0, -6.0, 200.0, 250.0, "HIGH", List.of(), ""));
 
         // Hotel 3: medio precio y buena puntuación
-        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h3", "Hotel Medio", "Sevilla", 4.5,
-                37.389, -5.983, 120.0, 180.0, "MEDIUM", List.of()));
+        datamart.addEvent(new HotelEvent(Instant.now(), "Xotelo", "h3", "Sevilla", "Hotel Medio", 4.5,
+                37.389, -5.983, 120.0, 180.0, "MEDIUM", List.of(), ""));
     }
 
     @Test

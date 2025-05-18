@@ -3,7 +3,6 @@ package org.dacd_proyect;
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.infrastructure.TicketmasterProvider;
 import org.dacd_proyect.infrastructure.EventSqliteStore;
-import org.dacd_proyect.TicketmasterController;
 
 import java.util.List;
 import java.util.Arrays;

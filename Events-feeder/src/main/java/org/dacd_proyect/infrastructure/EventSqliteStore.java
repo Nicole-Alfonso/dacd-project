@@ -1,12 +1,9 @@
-
 package org.dacd_proyect.infrastructure;
 
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 
 import java.sql.*;
-import java.time.Instant;
-import java.util.List;
 
 public class EventSqliteStore implements EventStore {
     private final String url;
@@ -31,7 +28,8 @@ public class EventSqliteStore implements EventStore {
                         ts TEXT,
                         date TEXT,
                         url TEXT,
-                        latlong TEXT
+                        lat REAL,
+                        lon REAL
                     );
                     """;
 
@@ -49,8 +47,8 @@ public class EventSqliteStore implements EventStore {
              PreparedStatement pstmt = connection.prepareStatement(
                      "INSERT OR REPLACE INTO events (" +
                              "ss, id, name, keyword, city, country_code, " +
-                             "ts, date, url, latlong) " +
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                             "ts, date, url, lat, lon) " +
+                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
              );
         ) {
 
@@ -58,12 +56,13 @@ public class EventSqliteStore implements EventStore {
             pstmt.setString(2, event.getId());
             pstmt.setString(3, event.getName());
             pstmt.setString(4, event.getKeyword());
-            pstmt.setString(5, String.join(",", event.getCity()));
+            pstmt.setString(5, event.getCity());
             pstmt.setString(6, event.getCountryCode());
-            pstmt.setString(7, event.getTimestamp().toString());
+            pstmt.setString(7, event.getTs().toString());
             pstmt.setString(8, event.getStartDateTime());
             pstmt.setString(9, event.getUrl());
-            pstmt.setString(10, event.getLatlong());
+            pstmt.setDouble(10, event.getLat());
+            pstmt.setDouble(11, event.getLon());
 
             pstmt.executeUpdate();
 
@@ -72,7 +71,3 @@ public class EventSqliteStore implements EventStore {
         }
     }
 }
-
-
-
-

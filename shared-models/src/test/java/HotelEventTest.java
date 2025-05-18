@@ -13,9 +13,9 @@ public class HotelEventTest {
     void testHotelEventCreation() {
         PriceOffer offer = new PriceOffer("TestProvider", 120.0, "EUR");
         HotelEvent hotel = new HotelEvent(
-                Instant.now(),"Xotelo", "h1", "Hotel Test", "Madrid",
+                Instant.now(),"Xotelo", "h1", "Madrid", "Hotel Test",
                 4.5, 40.41, -3.70,
-                100, 130, "MEDIUM", List.of(offer)
+                100, 130, "MEDIUM", List.of(offer), ""
         );
 
         assertEquals("h1", hotel.getId());
