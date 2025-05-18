@@ -1,17 +1,18 @@
 package org.business;
 
 import org.shared.EventInfo;
-import org.shared.FiltroHotel;
 import org.shared.HotelEvent;
-
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Datamart {
     private final Map<String, Map<String, HotelEvent>> hotelesPorCiudad = new HashMap<>();
     private final List<EventInfo> eventos = new ArrayList<>();
+    private final List<HotelEvent> hotelEvents = new ArrayList<>();
 
     public synchronized void addEvent(HotelEvent event) {
+        hotelEvents.add(event);
         hotelesPorCiudad
                 .computeIfAbsent(event.getCity().toLowerCase(), k -> new HashMap<>())
                 .put(event.getName(), event);
@@ -20,35 +21,22 @@ public class Datamart {
     public synchronized void addEvent(EventInfo event) {
         eventos.add(event);
     }
+
     public List<EventInfo> getEventos() {
         return eventos;
     }
 
-
-    public Optional<EventInfo> findEventoByNombre(String name) {
+    public Optional<EventInfo> findEventById(String id) {
         return eventos.stream()
-                .filter(e -> e.getName().equalsIgnoreCase(name))
+                .filter(e -> e.getId().equals(id))
                 .findFirst();
     }
 
-    public List<HotelEvent> getHotelesFiltrados(String ciudad, double eventoLat, double eventoLon, FiltroHotel filtro) {
-        return hotelesPorCiudad.getOrDefault(ciudad.toLowerCase(), Map.of())
-                .values().stream()
-                .filter(h -> h.getMinPrice() <= filtro.getMaxPrecio())
-                .filter(h -> filtro.getCategoria() == null || h.getCategory().equalsIgnoreCase(filtro.getCategoria()))
-                .filter(h -> h.getRating() >= filtro.getMinRating())
-                .filter(h -> calcularDistanciaKm(eventoLat, eventoLon, h.getLat(), h.getLon()) <= filtro.getMaxDistanciaKm())
+    public List<HotelEvent> findHotelEvents(String city, LocalDate checkIn, LocalDate checkOut) {
+        return hotelEvents.stream()
+                .filter(e -> e.getCity().equalsIgnoreCase(city)
+                        && e.getCheckIn().equals(checkIn)
+                        && e.getCheckOut().equals(checkOut))
                 .collect(Collectors.toList());
-    }
-
-
-    private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371; // km
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLon/2) * Math.sin(dLon/2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 }
