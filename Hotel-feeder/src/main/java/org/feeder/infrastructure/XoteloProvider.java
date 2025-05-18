@@ -29,6 +29,7 @@ public class XoteloProvider implements HotelProvider {
                 JsonObject hotelJson = element.getAsJsonObject();
 
                 String id = getJsonElementAsString(hotelJson, "key");
+
                 String name = getJsonElementAsString(hotelJson, "name");
 
                 JsonObject review = hotelJson.getAsJsonObject("review_summary");
@@ -39,8 +40,10 @@ public class XoteloProvider implements HotelProvider {
                 double lon = geo != null && geo.has("longitude") ? geo.get("longitude").getAsDouble() : 0.0;
 
                 List<PriceOffer> offers = fetchOffers(id);
+                String url = getJsonElementAsString(hotelJson, "url");
 
-                HotelData hotel = new HotelData(id, name, cityKey, rating, lat, lon, offers);
+
+                HotelData hotel = new HotelData(id, name, cityKey, rating, lat, lon, offers, url);
                 hotelDataList.add(hotel);
 
                 // Pausa breve para no saturar la API

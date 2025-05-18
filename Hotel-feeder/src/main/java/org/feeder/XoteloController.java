@@ -42,10 +42,10 @@ public class XoteloController {
                     store.saveHotel(hotel);
                     HotelEvent event = new HotelEvent(
                             Instant.now(), "Xotelo",
-                            hotel.getId(), hotel.getName(), hotel.getCity(),
+                            hotel.getId(), hotel.getName(), hotel.getCity_code() ,hotel.getCity(),
                             hotel.getRating(), hotel.getLatitude(), hotel.getLongitude(),
                             hotel.getMinPrice(), hotel.getMaxPrice(),
-                            hotel.getCategory().name(), hotel.getPriceOffers()
+                            hotel.getCategory().name(), hotel.getPriceOffers(), hotel.getUrl()
                     );
 
                     String json = gson.toJson(event);

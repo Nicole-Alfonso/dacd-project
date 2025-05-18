@@ -22,14 +22,16 @@ public class HotelSqliteStore implements HotelStore {
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS hotels (
                     id TEXT PRIMARY KEY,
-                    name TEXT,
+                    city_code TEXT,
                     city TEXT,
+                    name TEXT,
                     rating REAL,
                     latitude REAL,
                     longitude REAL,
                     min_price REAL,
                     max_price REAL,
                     category TEXT
+                    url TEXT
                 );
             """);
 
@@ -66,18 +68,20 @@ public class HotelSqliteStore implements HotelStore {
 
     private void insertOrUpdateHotel(Connection conn, HotelData hotel) throws SQLException {
         try (PreparedStatement stmt = conn.prepareStatement("""
-            INSERT OR REPLACE INTO hotels (id, name, city, rating, latitude, longitude, min_price, max_price, category)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT OR REPLACE INTO hotels (id, city_code, city, name, rating, latitude, longitude, min_price, max_price, category, url)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """)) {
             stmt.setString(1, hotel.getId());
-            stmt.setString(2, hotel.getName());
+            stmt.setString(2, hotel.getCity_code());
             stmt.setString(3, hotel.getCity());
-            stmt.setDouble(4, hotel.getRating());
-            stmt.setDouble(5, hotel.getLatitude());
-            stmt.setDouble(6, hotel.getLongitude());
-            stmt.setDouble(7, hotel.getMinPrice());
-            stmt.setDouble(8, hotel.getMaxPrice());
-            stmt.setString(9, hotel.getCategory().name());
+            stmt.setString(4, hotel.getName());
+            stmt.setDouble(5, hotel.getRating());
+            stmt.setDouble(6, hotel.getLatitude());
+            stmt.setDouble(7, hotel.getLongitude());
+            stmt.setDouble(8, hotel.getMinPrice());
+            stmt.setDouble(9, hotel.getMaxPrice());
+            stmt.setString(10, hotel.getCategory().name());
+            stmt.setString(11, hotel.getUrl());
             stmt.executeUpdate();
         }
     }
