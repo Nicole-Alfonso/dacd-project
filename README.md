@@ -61,16 +61,24 @@ The in-memory `Datamart` in the business unit module allows:
 
 ### Modules
 
-**Event-Feeder Module:**
-- Retrieves event data from the Ticketmaster API.
-- Publishes this data to the `event.Event` topic on ActiveMQ.
-- Includes classes such as TicketmasterController and Main, and three packages: application (EventProvider and EventStore), domain.model (Event) and infrastructure (EventSqliteStore and TicketmasterProvider).
+**Event-Feeder Module:** <br>
+Retrieves event data from the Ticketmaster API and publishes this data to the `event.Event` topic on ActiveMQ. <br>
+Includes classes and packages like:
+- **Main:** Entry point for the event feeder. Initializes the controller and sets up a scheduler for periodic event data fetching.
+- **TicketmasterController:** Coordinates fetching, storing, and publishing hotel data to ActiveMQ, using the HotelProvider and HotelStore interfaces. <br>
+- *application:* <br>
+**EventProvider:** Interface for classes that fetch event data from external sources. <br>
+**EventStore:** Interface for classes that store event data.<br>
+- *domain.model:* <br>
+**Event:** Represents an event with attributes like ID, name, location, date, and URL.<br>
+- *infrastructure:* <br>
+**TicketmasterProvider:** Fetches event data from the Ticketmaster API and converts it into Event objects. <br>
+**EventSqliteStore:** Stores event data in a local SQLite database.
 
 ![Class diagram](Event-feeder.png)
 
 **Hotel-Feeder Module:** <br>
 Retrieves hotel and pricing data from the Xotelo API. Publishes this data to the hotel.Hotel topic on ActiveMQ. <br>
-<br>
 Includes classes and packages like:
 - **Main:** Entry point for the hotel feeder. Initializes the controller and sets up a scheduler for periodic hotel data fetching.
 - **XoteloController:** Coordinates fetching, storing, and publishing hotel data to ActiveMQ, using the HotelProvider and HotelStore interfaces. <br>
@@ -86,9 +94,19 @@ Includes classes and packages like:
 ![Class diagram](Hotel-feeder.png)
 
 
-**Event-Store-Builder Module:**
-- Subscribes to the message broker and stores events in `.events` files for later processing.
-- Manages event serialization and file storage.
+**Event-Store-Builder Module:** <br>
+Subscribes to the message broker and stores events in `.events` files for later processing. Manages event serialization and file storage. <br>
+It has the following structure:
+- *core:*
+- **EventStoreBuilder:** Connects to ActiveMQ and creates subscribers to receive event messages. <br>
+- *launcher:* <br>
+**BuilderLauncher:** Starts the event listening process using EventStoreBuilder. <br>
+- *listener:* <br>
+**GenericEventListener:** Handles incoming messages and sends them to an EventWriter for persistence.<br>
+- *writer:* <br>
+**FileEventWriter:** Saves events to files, organized by topic and date. <br>
+**EventWriter:** Defines the contract for writing events to persistent storage.
+
   
 ![Class diagram](event-store-builder.png)
 
