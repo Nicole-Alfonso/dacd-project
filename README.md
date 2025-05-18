@@ -34,10 +34,10 @@ The system:
 
 ### APIs used:
 
-| API            | Why it was chosen |
-|----------------|-------------------|
-| **Ticketmaster** | Dynamic event data (concerts, sports, etc.) with location and time |
-| **Xotelo**        | Hotel listings with real-time rates by city and date |
+| API               | Url                                                                          |Why it was chosen |
+|-------------------|------------------------------------------------------------------------------|-------------------|
+| **Ticketmaster**  | https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/  | Dynamic event data (concerts, sports, etc.) with location and time |
+| **Xotelo**        | Hotels: https://data.xotelo.com/api/list?location_key=citykey&offset=0&limit=5<br>  Offers: https://data.xotelo.com/api/rates?hotel_key=hotelkey&chk_in=2025-07-16&chk_out=2025-07-20   | Hotel listings with real-time rates by city and date |    
 
 ### Datamart Design:
 
@@ -59,6 +59,38 @@ The in-memory `Datamart` in the business unit module allows:
 
 ---
 
-### Build All Modules
+### Modules
+
+Event-Feeder Module:
+- Retrieves event data from the Ticketmaster API.
+- Publishes this data to the event.Event topic on ActiveMQ.
+- Includes classes like EventController, TicketmasterProvider, and EventStore.
+
+  (foto diagrama)
+
+Hotel-Feeder Module:
+- Retrieves hotel and pricing data from the Xotelo API.
+- Publishes this data to the hotel.Hotel topic on ActiveMQ.
+- Includes classes like XoteloController, HotelProvider, and HotelStore.
+
+  (foto diagrama)
+
+Event Store Module:
+- Subscribes to the message broker and stores events in .events files for later processing.
+- Manages event serialization and file storage.
+
+Business Unit Module:
+- Processes stored events to generate user-friendly recommendations based on city, date, price, and rating.
+- Provides in-memory data structures for fast analysis.
+
+User Interface Module: 
+- Provides a simple CLI for interacting with the in-memory datamart and viewing hotel recommendations.
+- Handles user inputs and presents filtered results.
 
 ---
+### How to run the program
+
+
+
+---
+## 5. Resources used
