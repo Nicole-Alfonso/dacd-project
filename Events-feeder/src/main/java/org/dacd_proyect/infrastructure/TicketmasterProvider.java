@@ -9,6 +9,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
+
 
 public class TicketmasterProvider implements EventProvider {
     private final OkHttpClient client = new OkHttpClient();
@@ -19,18 +23,18 @@ public class TicketmasterProvider implements EventProvider {
     }
 
     @Override
-    public List<Event> fetchEvents(String city, String date) {
+    public List<Event> fetchEvents(String city, LocalDate localDate) {
         List<Event> events = new ArrayList<>();
+
+        String startDateTime = localDate + "T00:00:00Z";
 
         String url = "https://app.ticketmaster.com/discovery/v2/events.json" +
                 "?apikey=" + apiKey +
                 "&city=" + city +
-                "&startDateTime=" + date +
+                "&startDateTime=" + startDateTime +
                 "&size=20";
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
@@ -42,7 +46,7 @@ public class TicketmasterProvider implements EventProvider {
             JSONObject jsonObject = new JSONObject(jsonData);
 
             if (!jsonObject.has("_embedded")) {
-                System.err.println("No se encontraron eventos para " + city + " en la fecha " + date);
+                System.err.println("No se encontraron eventos para " + city + " en la fecha " + localDate);
                 return events;
             }
 
@@ -51,26 +55,35 @@ public class TicketmasterProvider implements EventProvider {
             for (int i = 0; i < eventArray.length(); i++) {
                 JSONObject eventJson = eventArray.getJSONObject(i);
 
-
                 String id = eventJson.optString("id", "Sin ID");
                 String name = eventJson.optString("name", "Sin nombre");
                 String urlEvent = eventJson.optString("url", "Sin URL");
-                Instant timestamp = Instant.now();
 
-                String latlong = "0.0,0.0";
-                if (eventJson.has("_embedded")) {
-                    JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
-                    if (venues.has("location")) {
-                        JSONObject location = venues.getJSONObject("location");
-                        latlong = location.optString("latitude", "0.0") + "," + location.optString("longitude", "0.0");
+                String latlong = eventJson.optJSONObject("_embedded")
+                        .getJSONArray("venues")
+                        .getJSONObject(0)
+                        .optJSONObject("location")
+                        .optString("latitude", "0.0") + "," +
+                        eventJson.optJSONObject("_embedded")
+                                .getJSONArray("venues")
+                                .getJSONObject(0)
+                                .optJSONObject("location")
+                                .optString("longitude", "0.0");
+
+                double lat = 0.0;
+                double lon = 0.0;
+
+                if (latlong.contains(",")) {
+                    String[] parts = latlong.split(",");
+                    try {
+                        lat = Double.parseDouble(parts[0]);
+                        lon = Double.parseDouble(parts[1]);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error al convertir latlong a double: " + e.getMessage());
                     }
                 }
 
-                String ss = "";
-                if (eventJson.has("promoter")) {
-                    JSONObject promoter = eventJson.getJSONObject("promoter");
-                    ss = promoter.optString("name", "");
-                }
+                String ss = "Ticketmaster";
 
                 String keyword = "";
                 if (eventJson.has("classifications")) {
@@ -81,7 +94,6 @@ public class TicketmasterProvider implements EventProvider {
                     }
                 }
 
-
                 String countryCode = " ";
                 if (eventJson.has("_embedded")) {
                     JSONObject venues = eventJson.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0);
@@ -91,9 +103,14 @@ public class TicketmasterProvider implements EventProvider {
                     }
                 }
 
+                String eventDateStr = eventJson.getJSONObject("dates")
+                        .getJSONObject("start")
+                        .optString("localDate", localDate.toString());
+                LocalDate eventDate = LocalDate.parse(eventDateStr);
 
-                Event event = new Event(ss, id, name, keyword, List.of(city), countryCode,
-                        timestamp, date, urlEvent, latlong);
+                Instant ts = Instant.now();
+                Event event = new Event(ts, ss, id, name, keyword, city, countryCode,
+                        eventDate, urlEvent, lat, lon);
 
                 events.add(event);
             }
@@ -105,4 +122,3 @@ public class TicketmasterProvider implements EventProvider {
         return events;
     }
 }
-

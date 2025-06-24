@@ -1,23 +1,21 @@
 package org.shared;
 
 import java.time.Instant;
-import java.time.temporal.Temporal;
+import java.time.LocalDate;
 
 public class EventInfo {
-    public Instant ts;
-    public String ss;
-    public String id;
-    public String name;
-    public String city;
-    public String date;
-    public String url;
-    public double lat;
-    public double lon;
-
-    public EventInfo() {}
+    private final Instant ts;
+    private final String ss;
+    private final String id;
+    private final String name;
+    private final String city;
+    private final LocalDate date;
+    private final String url;
+    private final double lat;
+    private final double lon;
 
     public EventInfo(Instant ts, String ss, String id, String name, String city,
-                     String date, String url, double lat, double lon) {
+                     LocalDate date, String url, double lat, double lon) {
         this.ts = Instant.now();
         this.ss = ss;
         this.id = id;
@@ -35,7 +33,7 @@ public class EventInfo {
     public String getId() { return id; }
     public String getName() { return name; }
     public String getCity() { return city; }
-    public Temporal getDate() { return date; }
+    public LocalDate getDate() { return date; }
     public String getUrl() { return url; }
     public double getLat() { return lat; }
     public double getLon() { return lon; }

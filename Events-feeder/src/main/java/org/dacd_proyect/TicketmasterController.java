@@ -4,6 +4,7 @@ import org.dacd_proyect.application.EventProvider;
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 import org.shared.InstantTypeAdapter;
+import org.shared.LocalDateTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,6 +12,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TicketmasterController {
@@ -22,55 +24,56 @@ public class TicketmasterController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(List<String> cities, String startDateTime) {
+    public int fetchSaveAndPublish(String city, LocalDate localDate) {
+        // Configurar Gson con los adaptadores para Instant y LocalDate
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .create();
 
         ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
-        for (String city : cities) {
-            List<Event> events = provider.fetchEvents(city, startDateTime);
+        List<Event> events = provider.fetchEvents(city, localDate);
 
-            Connection connection = null;
-            Session session = null;
+        if (events.isEmpty()) {
+            System.out.println("No se encontraron eventos para la ciudad: " + city + " en la fecha seleccionada.");
+            return 0;
+        }
 
+        Connection connection = null;
+        Session session = null;
+        int eventsPublished = 0;
+
+        try {
+            connection = factory.createConnection();
+            connection.start();
+
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = session.createTopic("TicketmasterEvents");
+            MessageProducer producer = session.createProducer(destination);
+
+            for (Event event : events) {
+                store.saveEvent(event);
+                String json = gson.toJson(event);
+                TextMessage message = session.createTextMessage(json);
+                producer.send(message);
+                eventsPublished++;
+            }
+
+            System.out.println("Eventos enviados a ActiveMQ para la ciudad: " + city);
+
+        } catch (JMSException e) {
+            System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());
+
+        } finally {
             try {
-                connection = factory.createConnection();
-                connection.start();
-
-                session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                Destination destination = session.createTopic("TicketmasterEvents");
-                MessageProducer producer = session.createProducer(destination);
-
-                for (Event event : events) {
-                    store.saveEvent(event);
-                    String json = gson.toJson(event);
-                    TextMessage message = session.createTextMessage(json);
-                    producer.send(message);
-                }
-
-                System.out.println("Eventos enviados a ActiveMQ para la ciudad: " + city);
-
+                if (session != null) session.close();
+                if (connection != null) connection.close();
             } catch (JMSException e) {
-                System.err.println("Error enviando evento a ActiveMQ: " + e.getMessage());
-
-            } finally {
-                if (session != null) {
-                    try {
-                        session.close();
-                    } catch (JMSException e) {
-                        System.err.println("Error cerrando session: " + e.getMessage());
-                    }
-                }
-                if (connection != null) {
-                    try {
-                        connection.close();
-                    } catch (JMSException e) {
-                        System.err.println("Error cerrando connection: " + e.getMessage());
-                    }
-                }
+                System.err.println("Error cerrando conexión: " + e.getMessage());
             }
         }
+
+        return eventsPublished;
     }
 }

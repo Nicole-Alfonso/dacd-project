@@ -2,11 +2,15 @@ package org.api.controller;
 
 import org.api.dto.HotelFilterRequest;
 import org.business.BusinessUnit;
+import org.business.Datamart;
+import org.business.events.LiveEventSubscriber;
+import org.business.events.EventStoreLoader;
 import org.shared.HotelEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -15,19 +19,25 @@ public class HotelController {
     private final BusinessUnit businessUnit;
 
     public HotelController() {
-        this.businessUnit = new BusinessUnit();
-        this.businessUnit.start(); // Carga datos y se suscribe
+        Datamart datamart = new Datamart();
+        EventStoreLoader.loadAllEvents(datamart);
+        LiveEventSubscriber.startListening(datamart);
+        this.businessUnit = new BusinessUnit(datamart);
     }
 
     @PostMapping("/event")
     public ResponseEntity<?> getHotelsForEvent(@RequestBody HotelFilterRequest request) {
         try {
+            LocalDate checkIn = request.getCheckIn();
+            int nights = request.getNights();
+            LocalDate checkOut = checkIn.plusDays(nights);
+
             List<HotelEvent> hoteles = businessUnit.getHotelesParaEvento(
                     request.getEventName(),
-                    request.getCategory(),
-                    request.getMaxPrice(),
-                    request.getMinRating(),
-                    request.getMaxDistanceKm()
+                    request.getCity(),
+                    checkIn,
+                    checkOut,
+                    request.toFilter()
             );
 
             if (hoteles.isEmpty()) {

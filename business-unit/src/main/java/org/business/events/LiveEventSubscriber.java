@@ -6,8 +6,11 @@ import org.business.Datamart;
 import org.shared.HotelEvent;
 import org.shared.EventInfo;
 import org.shared.InstantTypeAdapter;
+import org.shared.LocalDateTypeAdapter;
+
 import javax.jms.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class LiveEventSubscriber {
 
@@ -28,6 +31,7 @@ public class LiveEventSubscriber {
 
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                    .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                     .create();
 
             hotelConsumer.setMessageListener(msg -> {

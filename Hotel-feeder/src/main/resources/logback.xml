@@ -1,0 +1,18 @@
+<configuration>
+
+    <!-- Nivel general INFO -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- Console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Reduce logs de ActiveMQ a INFO (oculta DEBUG) -->
+    <logger name="org.apache.activemq" level="INFO" />
+
+</configuration>

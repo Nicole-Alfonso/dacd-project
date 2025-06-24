@@ -28,6 +28,21 @@
                         <input type="text" class="form-control" id="eventName" required>
                     </div>
                     <div class="col-md-6">
+                        <label for="city" class="form-label">Ciudad</label>
+                        <input type="text" class="form-control" id="city" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="checkIn" class="form-label">Fecha de Check-in</label>
+                        <input type="date" class="form-control" id="checkIn" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="nights" class="form-label">Noches de Estancia</label>
+                        <input type="number" class="form-control" id="nights" value="1" min="1" required>
+                    </div>
+                    <div class="col-md-4">
                         <label for="category" class="form-label">Categoría de Precio</label>
                         <select class="form-select" id="category">
                             <option value="">Todas</option>
@@ -65,20 +80,21 @@
     document.getElementById("searchForm").addEventListener("submit", async function (e) {
         e.preventDefault();
         const resultsContainer = document.getElementById("results");
-        resultsContainer.innerHTML = "";
+        resultsContainer.innerHTML = "<div class='text-muted'>🔎 Buscando hoteles...</div>";
 
         const data = {
             eventName: document.getElementById("eventName").value.trim(),
+            city: document.getElementById("city").value.trim(),
+            checkIn: document.getElementById("checkIn").value,
+            nights: parseInt(document.getElementById("nights").value),
             category: document.getElementById("category").value,
             maxPrice: parseFloat(document.getElementById("maxPrice").value) || 999999,
             minRating: parseFloat(document.getElementById("minRating").value) || 0,
             maxDistanceKm: parseFloat(document.getElementById("maxDistance").value) || 999
         };
 
-        resultsContainer.innerHTML = "<div class='text-muted'>🔎 Buscando hoteles...</div>";
-
         try {
-            const response = await fetch("/hotels/event", {
+            const response = await fetch("/event", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
