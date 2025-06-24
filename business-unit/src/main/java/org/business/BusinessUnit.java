@@ -31,10 +31,7 @@ public class BusinessUnit {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         EventInfo eventoSeleccionado = eventos.stream()
-                .min(Comparator.comparing(e -> {
-                    LocalDate eventDate = LocalDate.parse(e.getDate(), formatter);
-                    return Math.abs(ChronoUnit.DAYS.between(eventDate, checkIn));
-                }))
+                .min(Comparator.comparing(e -> Math.abs(ChronoUnit.DAYS.between(e.getDate(), checkIn))))
                 .orElse(null);
 
         if (eventoSeleccionado == null) {
