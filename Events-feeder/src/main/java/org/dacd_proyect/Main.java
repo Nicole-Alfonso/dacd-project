@@ -41,8 +41,12 @@ public class Main {
         EventStore store = new EventSqliteStore("jdbc:sqlite:events.db");
 
         TicketmasterController controller = new TicketmasterController(provider, store);
-        controller.fetchSaveAndPublish(city, localDate);
+        int eventsPublished = controller.fetchSaveAndPublish(city, localDate);
 
-        System.out.println("Eventos cargados para la ciudad " + city + " a partir del día " + localDate);
+        if (eventsPublished > 0) {
+            System.out.println("Se han cargado " + eventsPublished + " eventos para la ciudad " + city + " a partir del día " + localDate);
+        } else {
+            System.out.println("No se cargaron eventos para la ciudad " + city + " en la fecha seleccionada.");
+        }
     }
 }
