@@ -2,7 +2,6 @@ package org.shared;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.Temporal;
 
 public class EventInfo {
     private final Instant ts;
@@ -10,13 +9,13 @@ public class EventInfo {
     private final String id;
     private final String name;
     private final String city;
-    private final String date;
+    private final LocalDate date;
     private final String url;
     private final double lat;
     private final double lon;
 
     public EventInfo(Instant ts, String ss, String id, String name, String city,
-                     String date, String url, double lat, double lon) {
+                     LocalDate date, String url, double lat, double lon) {
         this.ts = Instant.now();
         this.ss = ss;
         this.id = id;
@@ -34,7 +33,7 @@ public class EventInfo {
     public String getId() { return id; }
     public String getName() { return name; }
     public String getCity() { return city; }
-    public String getDate() { return date; }
+    public LocalDate getDate() { return date; }
     public String getUrl() { return url; }
     public double getLat() { return lat; }
     public double getLon() { return lon; }

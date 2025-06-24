@@ -9,6 +9,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
+
 
 public class TicketmasterProvider implements EventProvider {
     private final OkHttpClient client = new OkHttpClient();
@@ -19,8 +23,10 @@ public class TicketmasterProvider implements EventProvider {
     }
 
     @Override
-    public List<Event> fetchEvents(String city, String startDateTime) {
+    public List<Event> fetchEvents(String city, LocalDate localDate) {
         List<Event> events = new ArrayList<>();
+
+        String startDateTime = localDate + "T00:00:00Z";
 
         String url = "https://app.ticketmaster.com/discovery/v2/events.json" +
                 "?apikey=" + apiKey +
@@ -40,7 +46,7 @@ public class TicketmasterProvider implements EventProvider {
             JSONObject jsonObject = new JSONObject(jsonData);
 
             if (!jsonObject.has("_embedded")) {
-                System.err.println("No se encontraron eventos para " + city + " en la fecha " + startDateTime);
+                System.err.println("No se encontraron eventos para " + city + " en la fecha " + localDate);
                 return events;
             }
 
@@ -52,7 +58,6 @@ public class TicketmasterProvider implements EventProvider {
                 String id = eventJson.optString("id", "Sin ID");
                 String name = eventJson.optString("name", "Sin nombre");
                 String urlEvent = eventJson.optString("url", "Sin URL");
-                Instant timestamp = Instant.now();
 
                 String latlong = eventJson.optJSONObject("_embedded")
                         .getJSONArray("venues")
@@ -97,9 +102,15 @@ public class TicketmasterProvider implements EventProvider {
                         countryCode = country.optString("countryCode", " ");
                     }
                 }
+
+                String eventDateStr = eventJson.getJSONObject("dates")
+                        .getJSONObject("start")
+                        .optString("localDate", localDate.toString());
+                LocalDate eventDate = LocalDate.parse(eventDateStr);
+
                 Instant ts = Instant.now();
                 Event event = new Event(ts, ss, id, name, keyword, city, countryCode,
-                        startDateTime, urlEvent, lat, lon);
+                        eventDate, urlEvent, lat, lon);
 
                 events.add(event);
             }

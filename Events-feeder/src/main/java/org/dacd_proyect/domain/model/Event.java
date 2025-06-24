@@ -1,6 +1,7 @@
 package org.dacd_proyect.domain.model;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 public class Event {
     private Instant ts;
@@ -10,13 +11,13 @@ public class Event {
     private final String keyword;
     private final String city;
     private final String countryCode;
-    private final String startDateTime;
+    private final LocalDate localDate;
     private final String url;
     private final double lat;
     private final double lon;
 
     public Event(Instant ts, String ss, String id, String name, String keyword, String city,
-                 String countryCode, String startDateTime, String url,
+                 String countryCode, LocalDate localDate, String url,
                  double lat, double lon) {
         this.ts = ts;
         this.ss = ss;
@@ -25,7 +26,7 @@ public class Event {
         this.keyword = keyword;
         this.city = city;
         this.countryCode = countryCode;
-        this.startDateTime = startDateTime;
+        this.localDate = localDate;
         this.url = url;
         this.lat = lat;
         this.lon = lon;
@@ -38,7 +39,7 @@ public class Event {
     public String getKeyword() { return keyword; }
     public String getCity() { return city; }
     public String getCountryCode() { return countryCode; }
-    public String getStartDateTime() { return startDateTime; }
+    public LocalDate getLocalDate() { return localDate; }
     public String getUrl() { return url; }
     public double getLat() { return lat; }
     public double getLon() { return lon; }
@@ -50,7 +51,7 @@ public class Event {
                 this.id,
                 this.name,
                 this.city,
-                this.startDateTime,
+                this.localDate,
                 this.url,
                 this.lat,
                 this.lon

@@ -11,7 +11,9 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+import org.shared.LocalDateTypeAdapter;
 
 public class TicketmasterController {
     private final EventProvider provider;
@@ -22,15 +24,16 @@ public class TicketmasterController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String city, String startDateTime) {
+    public void fetchSaveAndPublish(String city, LocalDate localDate) {
         // Configurar Gson con el adaptador para Instant
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .create();
 
         ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
-        List<Event> events = provider.fetchEvents(city, startDateTime);
+        List<Event> events = provider.fetchEvents(city, localDate);
 
         Connection connection = null;
         Session session = null;
