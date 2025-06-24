@@ -27,9 +27,6 @@ public class BusinessUnit {
             return List.of();
         }
 
-        // Seleccionar el evento cuya fecha sea más cercana al check-in proporcionado
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         EventInfo eventoSeleccionado = eventos.stream()
                 .min(Comparator.comparing(e -> Math.abs(ChronoUnit.DAYS.between(e.getDate(), checkIn))))
                 .orElse(null);
