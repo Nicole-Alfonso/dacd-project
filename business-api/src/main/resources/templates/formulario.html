@@ -2,19 +2,108 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Buscar Hoteles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('/fondo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.6);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-<h1>Buscar Hoteles para Evento</h1>
-<form action="/filtrar" method="post">
-    <label>Evento: <input type="text" name="evento" required></label><br/>
-    <label>Ciudad: <input type="text" name="ciudad" required></label><br/>
-    <label>Check-in: <input type="date" name="checkIn" required></label><br/>
-    <label>Check-out: <input type="date" name="checkOut" required></label><br/>
-    <label>Categoría: <input type="text" name="categoria"></label><br/>
-    <label>Precio máximo: <input type="number" name="precioMax" min="0" step="0.01"></label><br/>
-    <label>Rating mínimo: <input type="number" name="minRating" min="0" max="5" step="0.1"></label><br/>
-    <label>Distancia máxima (km): <input type="number" name="distanciaMaxKm" min="0" step="0.1"></label><br/>
-    <button type="submit">Buscar</button>
-</form>
+<div class="overlay">
+    <div class="form-container">
+        <h1>Buscar Hoteles para Evento</h1>
+        <form action="/filtrar" method="post">
+            <label>Evento:
+                <input type="text" name="evento" required>
+            </label>
+            <label>Ciudad:
+                <input type="text" name="ciudad" required>
+            </label>
+            <label>Check-in:
+                <input type="date" name="checkIn" required>
+            </label>
+            <label>Check-out:
+                <input type="date" name="checkOut" required>
+            </label>
+            <label>Categoria:
+                <input type="text" name="categoria">
+            </label>
+            <label>Precio maximo:
+                <input type="number" name="precioMax" min="0" step="0.01">
+            </label>
+            <label>Rating minimo:
+                <input type="number" name="minRating" min="0" max="5" step="0.1">
+            </label>
+            <label>Distancia maxima (km):
+                <input type="number" name="distanciaMaxKm" min="0" step="0.1">
+            </label>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
