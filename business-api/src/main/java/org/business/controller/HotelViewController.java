@@ -42,7 +42,13 @@ public class HotelViewController {
             @RequestParam(name = "distanciaMaxKm", required = false, defaultValue = "999999") double distanciaMaxKm,
             Model model) {
 
-        HotelFilter filtro = new HotelFilter(null, Double.MAX_VALUE, 0.0, Double.MAX_VALUE);
+        // Normalizar categoría para que filtro entienda que no hay filtro si está vacía o null
+        if (categoria != null && categoria.trim().isEmpty()) {
+            categoria = null;
+        }
+
+        // Construir filtro con valores reales recibidos
+        HotelFilter filtro = new HotelFilter(categoria, precioMax, minRating, distanciaMaxKm);
 
         LocalDate in = LocalDate.parse(checkIn);
         LocalDate out = LocalDate.parse(checkOut);
