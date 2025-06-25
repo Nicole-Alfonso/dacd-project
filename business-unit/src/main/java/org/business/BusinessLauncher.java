@@ -50,8 +50,6 @@ public class BusinessLauncher {
             BusinessUnit unit = new BusinessUnit(datamart);
             List<HotelEvent> hoteles = unit.getHotelesParaEvento(nombreEvento, ciudad, checkIn, checkOut, filtro);
 
-            hoteles.forEach(System.out::println);
-
         } catch (DateTimeParseException e) {
             System.err.println("Error: Formato de fecha inválido. Usa yyyy-MM-dd para checkIn y checkOut.");
         } catch (NumberFormatException e) {

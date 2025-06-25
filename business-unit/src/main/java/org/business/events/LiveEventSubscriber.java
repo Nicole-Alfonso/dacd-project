@@ -44,7 +44,7 @@ public class LiveEventSubscriber {
                         datamart.addHotel(hotelEvent);
                         hotelCount[0]++;
                         if (hotelCount[0] % 10 == 0) {
-                            System.out.println("🏨 Hoteles recibidos hasta ahora: " + hotelCount[0]);
+                            System.out.println("Hoteles recibidos hasta ahora: " + hotelCount[0]);
                         }
                     } catch (Exception e) {
                         System.err.println("Error HotelEvent: " + e.getMessage());
@@ -59,7 +59,7 @@ public class LiveEventSubscriber {
                         datamart.addEvent(concert);
                         eventCount[0]++;
                         if (eventCount[0] % 10 == 0) {
-                            System.out.println("🎵 Eventos recibidos hasta ahora: " + eventCount[0]);
+                            System.out.println("Eventos recibidos hasta ahora: " + eventCount[0]);
                         }
                     } catch (Exception e) {
                         System.err.println("Error EventInfo: " + e.getMessage());
