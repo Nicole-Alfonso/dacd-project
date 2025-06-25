@@ -5,7 +5,6 @@ import org.shared.HotelEvent;
 import org.shared.HotelFilter;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -20,10 +19,12 @@ public class BusinessUnit {
     }
 
     public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String ciudad, LocalDate checkIn, LocalDate checkOut, HotelFilter filtro) {
-        List<EventInfo> eventos = datamart.getEventosPorNombreYCiudad(nombreEvento, ciudad);
+        List<EventInfo> eventos = datamart.getEventosPorNombreYCiudad(nombreEvento, ciudad).stream()
+                .filter(e -> !e.getDate().isBefore(checkIn) && !e.getDate().isAfter(checkOut))
+                .toList();
 
         if (eventos.isEmpty()) {
-            System.err.println("No se encontraron eventos con el nombre y ciudad especificados.");
+            System.err.println("No hay eventos en el rango de fechas especificado para la ciudad y nombre dados.");
             return List.of();
         }
 

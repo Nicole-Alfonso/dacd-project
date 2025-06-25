@@ -22,49 +22,50 @@ public class EventStoreLoader {
             .create();
 
     public static void loadAllEvents(Datamart datamart) {
-        loadHotelEvents("eventstore/HotelPrice/Xotelo", datamart);
-        loadConcertEvents("eventstore/TicketmasterEvents/ticketmaster", datamart);
+        int hotelCount = loadHotelEvents("eventstore/HotelPrice/Xotelo", datamart);
+        int concertCount = loadConcertEvents("eventstore/TicketmasterEvents/ticketmaster", datamart);
+        System.out.println("Carga completa: " + hotelCount + " hoteles y " + concertCount + " eventos cargados.");
     }
 
-    private static void loadHotelEvents(String folderPath, Datamart datamart) {
+    private static int loadHotelEvents(String folderPath, Datamart datamart) {
+        int count = 0;
         try (Stream<Path> files = Files.walk(Path.of(folderPath))) {
-            files.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".events"))
-                    .forEach(file -> {
-                        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                HotelEvent event = gson.fromJson(line, HotelEvent.class);
-                                datamart.addHotel(event);
-                            }
-                            System.out.println("HotelEvents cargados: " + file);
-                        } catch (Exception e) {
-                            System.err.println("Error en " + file + ": " + e.getMessage());
-                        }
-                    });
+            for (Path file : (Iterable<Path>) files.filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".events"))::iterator) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        HotelEvent event = gson.fromJson(line, HotelEvent.class);
+                        datamart.addHotel(event);
+                        count++;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error en " + file + ": " + e.getMessage());
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error accediendo a carpeta: " + folderPath);
         }
+        return count;
     }
 
-    private static void loadConcertEvents(String folderPath, Datamart datamart) {
+    private static int loadConcertEvents(String folderPath, Datamart datamart) {
+        int count = 0;
         try (Stream<Path> files = Files.walk(Path.of(folderPath))) {
-            files.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".events"))
-                    .forEach(file -> {
-                        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                EventInfo event = gson.fromJson(line, EventInfo.class);
-                                datamart.addEvent(event);
-                            }
-                            System.out.println("✔ EventInfo cargados: " + file);
-                        } catch (Exception e) {
-                            System.err.println("Error en " + file + ": " + e.getMessage());
-                        }
-                    });
+            for (Path file : (Iterable<Path>) files.filter(Files::isRegularFile).filter(p -> p.toString().endsWith(".events"))::iterator) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        EventInfo event = gson.fromJson(line, EventInfo.class);
+                        datamart.addEvent(event);
+                        count++;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error en " + file + ": " + e.getMessage());
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error accediendo a carpeta: " + folderPath);
         }
+        return count;
     }
 }
