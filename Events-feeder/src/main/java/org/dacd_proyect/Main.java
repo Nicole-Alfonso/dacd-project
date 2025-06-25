@@ -7,10 +7,12 @@ import org.dacd_proyect.infrastructure.EventSqliteStore;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
-        // Comprobar que la API key se ha pasado como argumento
         if (args.length < 1) {
             System.err.println("Uso: java Main <apiKey>");
             System.exit(1);
@@ -20,11 +22,9 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Pedir ciudad
         System.out.print("Introduce la ciudad: ");
         String city = scanner.nextLine();
 
-        // Pedir fecha
         System.out.print("Introduce la fecha a partir de la cual buscar eventos (formato YYYY-MM-DD): ");
         String inputDate = scanner.nextLine();
 
@@ -36,17 +36,29 @@ public class Main {
             return;
         }
 
-        // Configurar provider y store
         TicketmasterProvider provider = new TicketmasterProvider(apiKey);
         EventStore store = new EventSqliteStore("jdbc:sqlite:events.db");
-
         TicketmasterController controller = new TicketmasterController(provider, store);
-        int eventsPublished = controller.fetchSaveAndPublish(city, localDate);
 
-        if (eventsPublished > 0) {
-            System.out.println("Se han cargado " + eventsPublished + " eventos para la ciudad " + city + " a partir del día " + localDate);
-        } else {
-            System.out.println("No se cargaron eventos para la ciudad " + city + " en la fecha seleccionada.");
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable task = () -> {
+            int eventsPublished = controller.fetchSaveAndPublish(city, localDate);
+            if (eventsPublished > 0) {
+                System.out.println("Se han cargado " + eventsPublished + " eventos para la ciudad " + city + " a partir del día " + localDate);
+            } else {
+                System.out.println("No se cargaron eventos para la ciudad " + city + " en la fecha seleccionada.");
+            }
+        };
+
+        // Ejecutar inmediatamente y luego cada 30 minutos (puedes ajustar este intervalo)
+        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
+
+        // Para que la app no termine y mantenga el scheduler vivo, bloqueamos el hilo principal
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            System.err.println("Ejecución interrumpida: " + e.getMessage());
         }
     }
 }

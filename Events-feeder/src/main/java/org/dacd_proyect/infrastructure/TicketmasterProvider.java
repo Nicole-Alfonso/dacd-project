@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.OffsetDateTime;
-
 
 public class TicketmasterProvider implements EventProvider {
     private final OkHttpClient client = new OkHttpClient();

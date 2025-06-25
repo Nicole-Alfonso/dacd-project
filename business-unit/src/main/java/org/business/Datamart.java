@@ -9,13 +9,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Datamart {
-    private final List<EventInfo> eventos = new ArrayList<>();
+    // Cambiar List por Set para eventos y evitar duplicados
+    private final Set<EventInfo> eventos = new HashSet<>();
     private final List<HotelEvent> hoteles = new ArrayList<>();
     private final List<HotelEvent> hotelEvents = new ArrayList<>();
 
-
-    public void addEvent(EventInfo event) {
-        eventos.add(event);
+    // Cambiar método para agregar evento a usar el Set, devolver boolean para saber si se agregó
+    public boolean addEvent(EventInfo event) {
+        boolean agregado = eventos.add(event);
+        if (!agregado) {
+            System.out.println("Evento duplicado ignorado: " + event);
+        }
+        return agregado;
     }
 
     public void addHotel(HotelEvent hotel) {
@@ -23,6 +28,7 @@ public class Datamart {
     }
 
     public List<EventInfo> getEventosPorNombreYCiudad(String nombreEvento, String ciudad) {
+        // Convertir Set a Stream y filtrar
         return eventos.stream()
                 .filter(e -> e.getName().equalsIgnoreCase(nombreEvento) && e.getCity().equalsIgnoreCase(ciudad))
                 .collect(Collectors.toList());
@@ -33,9 +39,9 @@ public class Datamart {
                 .filter(h -> h.getCity().equalsIgnoreCase(ciudad))
                 .filter(h -> !h.getCheckIn().isAfter(checkIn) && !h.getCheckOut().isBefore(checkOut))
                 .filter(h -> filtro.getCategoria() == null || h.getCategory().equalsIgnoreCase(filtro.getCategoria()))
-                .filter(h -> h.getMaxPrice() <= filtro.getPrecioMax())
-                .filter(h -> h.getRating() >= filtro.getMinRating())
-                .filter(h -> calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento) <= filtro.getDistanciaMaxKm())
+                .filter(h -> filtro.getPrecioMax() <= 0 || h.getMaxPrice() <= filtro.getPrecioMax())
+                .filter(h -> filtro.getMinRating() <= 0 || h.getRating() >= filtro.getMinRating())
+                .filter(h -> filtro.getDistanciaMaxKm() <= 0 || calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento) <= filtro.getDistanciaMaxKm())
                 .collect(Collectors.toList());
     }
 
