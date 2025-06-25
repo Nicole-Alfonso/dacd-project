@@ -4,6 +4,7 @@ import org.dacd_proyect.application.EventProvider;
 import org.dacd_proyect.application.EventStore;
 import org.dacd_proyect.domain.model.Event;
 import org.shared.InstantTypeAdapter;
+import org.shared.LocalDateTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,6 +12,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TicketmasterController {
@@ -22,18 +24,24 @@ public class TicketmasterController {
         this.store = store;
     }
 
-    public void fetchSaveAndPublish(String city, String startDateTime) {
-        // Configurar Gson con el adaptador para Instant
+    public int fetchSaveAndPublish(String city, LocalDate localDate) {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .create();
 
         ConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
-        List<Event> events = provider.fetchEvents(city, startDateTime);
+        List<Event> events = provider.fetchEvents(city, localDate);
+
+        if (events.isEmpty()) {
+            System.out.println("No se encontraron eventos para la ciudad: " + city + " en la fecha seleccionada.");
+            return 0;
+        }
 
         Connection connection = null;
         Session session = null;
+        int eventsPublished = 0;
 
         try {
             connection = factory.createConnection();
@@ -48,6 +56,7 @@ public class TicketmasterController {
                 String json = gson.toJson(event);
                 TextMessage message = session.createTextMessage(json);
                 producer.send(message);
+                eventsPublished++;
             }
 
             System.out.println("Eventos enviados a ActiveMQ para la ciudad: " + city);
@@ -63,5 +72,7 @@ public class TicketmasterController {
                 System.err.println("Error cerrando conexión: " + e.getMessage());
             }
         }
+
+        return eventsPublished;
     }
 }

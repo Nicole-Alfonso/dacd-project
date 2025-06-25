@@ -9,13 +9,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Datamart {
-    private final List<EventInfo> eventos = new ArrayList<>();
+    private final Set<EventInfo> eventos = new HashSet<>();
     private final List<HotelEvent> hoteles = new ArrayList<>();
     private final List<HotelEvent> hotelEvents = new ArrayList<>();
 
-
-    public void addEvent(EventInfo event) {
-        eventos.add(event);
+    public boolean addEvent(EventInfo event) {
+        boolean agregado = eventos.add(event);
+        return agregado;
     }
 
     public void addHotel(HotelEvent hotel) {
@@ -33,9 +33,22 @@ public class Datamart {
                 .filter(h -> h.getCity().equalsIgnoreCase(ciudad))
                 .filter(h -> !h.getCheckIn().isAfter(checkIn) && !h.getCheckOut().isBefore(checkOut))
                 .filter(h -> filtro.getCategoria() == null || h.getCategory().equalsIgnoreCase(filtro.getCategoria()))
-                .filter(h -> h.getMaxPrice() <= filtro.getPrecioMax())
-                .filter(h -> h.getRating() >= filtro.getMinRating())
-                .filter(h -> calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento) <= filtro.getDistanciaMaxKm())
+                .filter(h -> filtro.getPrecioMax() <= 0 || h.getMaxPrice() <= filtro.getPrecioMax())
+                .filter(h -> filtro.getMinRating() <= 0 || h.getRating() >= filtro.getMinRating())
+                .filter(h -> {
+                    if (filtro.getDistanciaMaxKm() <= 0) {
+                        return true;
+                    }
+                    // Validar lat/lon válidos para evento y hotel
+                    boolean eventoTieneCoordenadas = latEvento != 0.0 && lonEvento != 0.0;
+                    boolean hotelTieneCoordenadas = h.getLat() != 0.0 && h.getLon() != 0.0;
+                    if (!eventoTieneCoordenadas || !hotelTieneCoordenadas) {
+                        // No se puede calcular distancia, no aplicar filtro distancia
+                        return true;
+                    }
+                    double distancia = calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento);
+                    return distancia <= filtro.getDistanciaMaxKm();
+                })
                 .collect(Collectors.toList());
     }
 

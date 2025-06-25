@@ -6,11 +6,11 @@ public class HotelFilter {
     private double minRating;
     private double distanciaMaxKm;
 
-    public HotelFilter(String categoria, double precioMax, double minRating, double distanciaMaxKm) {
+    public HotelFilter(String categoria, Double precioMax, Double minRating, Double distanciaMaxKm) {
         this.categoria = categoria;
-        this.precioMax = precioMax;
-        this.minRating = minRating;
-        this.distanciaMaxKm = distanciaMaxKm;
+        this.precioMax = precioMax != null ? precioMax : Double.MAX_VALUE;
+        this.minRating = minRating != null ? minRating : 0;
+        this.distanciaMaxKm = distanciaMaxKm != null ? distanciaMaxKm : Double.MAX_VALUE;
     }
 
     public String getCategoria() { return categoria; }

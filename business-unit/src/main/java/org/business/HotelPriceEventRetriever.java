@@ -14,10 +14,7 @@ public class HotelPriceEventRetriever {
     }
 
     public List<HotelEvent> retrieveAndStore(String city, LocalDate checkIn, LocalDate checkOut, Datamart datamart) {
-        // Vuelve a cargar los eventos de hotel desde disco (eventstore/)
         EventStoreLoader.loadAllEvents(datamart);
-
-        // Devuelve los hoteles ya cargados en memoria que coincidan
         return datamart.findHotelEvents(city, checkIn, checkOut);
     }
 }

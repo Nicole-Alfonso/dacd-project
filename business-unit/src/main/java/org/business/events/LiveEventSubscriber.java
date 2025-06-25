@@ -34,12 +34,18 @@ public class LiveEventSubscriber {
                     .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                     .create();
 
+            final int[] hotelCount = {0};
+            final int[] eventCount = {0};
+
             hotelConsumer.setMessageListener(msg -> {
                 if (msg instanceof TextMessage text) {
                     try {
                         HotelEvent hotelEvent = gson.fromJson(text.getText(), HotelEvent.class);
                         datamart.addHotel(hotelEvent);
-                        System.out.println("HotelEvent recibido: " + hotelEvent.getName());
+                        hotelCount[0]++;
+                        if (hotelCount[0] % 10 == 0) {
+                            System.out.println("Hoteles recibidos hasta ahora: " + hotelCount[0]);
+                        }
                     } catch (Exception e) {
                         System.err.println("Error HotelEvent: " + e.getMessage());
                     }
@@ -51,7 +57,10 @@ public class LiveEventSubscriber {
                     try {
                         EventInfo concert = gson.fromJson(text.getText(), EventInfo.class);
                         datamart.addEvent(concert);
-                        System.out.println("📩 EventInfo recibido: " + concert.getName());
+                        eventCount[0]++;
+                        if (eventCount[0] % 10 == 0) {
+                            System.out.println("Eventos recibidos hasta ahora: " + eventCount[0]);
+                        }
                     } catch (Exception e) {
                         System.err.println("Error EventInfo: " + e.getMessage());
                     }

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Buscar Hoteles</title>
+</head>
+<body>
+<h1>Buscar Hoteles para Evento</h1>
+<form action="/filtrar" method="post">
+    <label>Evento: <input type="text" name="evento" required></label><br/>
+    <label>Ciudad: <input type="text" name="ciudad" required></label><br/>
+    <label>Check-in: <input type="date" name="checkIn" required></label><br/>
+    <label>Check-out: <input type="date" name="checkOut" required></label><br/>
+    <label>Categoría: <input type="text" name="categoria"></label><br/>
+    <label>Precio máximo: <input type="number" name="precioMax" min="0" step="0.01"></label><br/>
+    <label>Rating mínimo: <input type="number" name="minRating" min="0" max="5" step="0.1"></label><br/>
+    <label>Distancia máxima (km): <input type="number" name="distanciaMaxKm" min="0" step="0.1"></label><br/>
+    <button type="submit">Buscar</button>
+</form>
+</body>
+</html>

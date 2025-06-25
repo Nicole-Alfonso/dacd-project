@@ -59,7 +59,7 @@ public class EventSqliteStore implements EventStore {
             pstmt.setString(5, event.getCity());
             pstmt.setString(6, event.getCountryCode());
             pstmt.setString(7, event.getTs().toString());
-            pstmt.setString(8, event.getStartDateTime());
+            pstmt.setString(8, String.valueOf(event.getLocalDate()));
             pstmt.setString(9, event.getUrl());
             pstmt.setDouble(10, event.getLat());
             pstmt.setDouble(11, event.getLon());
