@@ -19,7 +19,6 @@ public class BusinessUnit {
     }
 
     public List<HotelEvent> getHotelesParaEvento(String nombreEvento, String ciudad, LocalDate checkIn, LocalDate checkOut, HotelFilter filtro) {
-        // Obtener eventos por nombre y ciudad
         List<EventInfo> eventos = datamart.getEventosPorNombreYCiudad(nombreEvento, ciudad);
 
         System.out.println("\n=== [INFO] Datos Cargados Inicialmente ===");
@@ -30,7 +29,6 @@ public class BusinessUnit {
             System.out.printf("Evento: %s, Ciudad: %s, Fecha: %s%n", e.getName(), e.getCity(), e.getLocalDate());
         }
 
-        // Filtrar eventos por fecha
         List<EventInfo> eventosFiltrados = eventos.stream()
                 .filter(e -> e.getLocalDate() != null && !e.getLocalDate().isBefore(checkIn) && !e.getLocalDate().isAfter(checkOut))
                 .distinct()
@@ -41,7 +39,6 @@ public class BusinessUnit {
             return List.of();
         }
 
-        // Seleccionar evento más cercano a la fecha de check-in
         EventInfo eventoSeleccionado = eventosFiltrados.stream()
                 .min(Comparator.comparing(e -> Math.abs(ChronoUnit.DAYS.between(e.getLocalDate(), checkIn))))
                 .orElse(null);
@@ -51,7 +48,6 @@ public class BusinessUnit {
             return List.of();
         }
 
-        // Buscar hoteles cercanos al evento
         List<HotelEvent> hoteles = datamart.getHotelesFiltrados(
                 ciudad, checkIn, checkOut, filtro, eventoSeleccionado.getLat(), eventoSeleccionado.getLon()
         );
@@ -66,7 +62,6 @@ public class BusinessUnit {
             );
         }
 
-        // Llamar al metodo para imprimir de forma bonita
         printHotelesBonito(hoteles);
 
         return hoteles;
@@ -83,7 +78,7 @@ public class BusinessUnit {
             if (hotel.getUrl() != null && !hotel.getUrl().isBlank()) {
                 System.out.println("    • URL: " + hotel.getUrl());
             }
-            System.out.println(); // Separador entre hoteles
+            System.out.println();
         }
     }
 }

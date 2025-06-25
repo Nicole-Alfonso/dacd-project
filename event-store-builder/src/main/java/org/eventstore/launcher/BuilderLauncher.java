@@ -9,13 +9,11 @@ public class BuilderLauncher {
         EventStoreBuilder builder = new EventStoreBuilder();
         builder.start();
 
-        // Mantener el proceso activo indefinidamente
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Event Store Builder detenido.");
         }));
 
         try {
-            // Evita que el hilo principal finalice
             Thread.currentThread().join();
         } catch (InterruptedException e) {
             System.err.println("Interrupción en BuilderLauncher: " + e.getMessage());

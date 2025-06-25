@@ -51,7 +51,7 @@ public class XoteloProvider implements HotelProvider {
                 HotelData hotel = new HotelData(id, cityName, name, rating, lat, lon, offers, ts, url, checkIn, checkOut);
                 hotelDataList.add(hotel);
 
-                Thread.sleep(500); // Pausa entre llamadas
+                Thread.sleep(500);
             }
 
         } catch (Exception e) {
@@ -91,8 +91,6 @@ public class XoteloProvider implements HotelProvider {
 
         return offers;
     }
-
-    // Utilidades JSON
 
     private JsonArray getJsonArrayFromUrl(String urlStr, String... path) throws Exception {
         JsonObject json = getJsonFromUrl(urlStr);

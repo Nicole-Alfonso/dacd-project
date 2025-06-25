@@ -51,10 +51,8 @@ public class Main {
             }
         };
 
-        // Ejecutar inmediatamente y luego cada 30 minutos (puedes ajustar este intervalo)
         scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
 
-        // Para que la app no termine y mantenga el scheduler vivo, bloqueamos el hilo principal
         try {
             Thread.currentThread().join();
         } catch (InterruptedException e) {

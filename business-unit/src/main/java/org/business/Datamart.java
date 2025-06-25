@@ -9,12 +9,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Datamart {
-    // Cambiar List por Set para eventos y evitar duplicados
     private final Set<EventInfo> eventos = new HashSet<>();
     private final List<HotelEvent> hoteles = new ArrayList<>();
     private final List<HotelEvent> hotelEvents = new ArrayList<>();
 
-    // Cambiar método para agregar evento a usar el Set, devolver boolean para saber si se agregó
     public boolean addEvent(EventInfo event) {
         boolean agregado = eventos.add(event);
         if (!agregado) {
@@ -28,7 +26,6 @@ public class Datamart {
     }
 
     public List<EventInfo> getEventosPorNombreYCiudad(String nombreEvento, String ciudad) {
-        // Convertir Set a Stream y filtrar
         return eventos.stream()
                 .filter(e -> e.getName().equalsIgnoreCase(nombreEvento) && e.getCity().equalsIgnoreCase(ciudad))
                 .collect(Collectors.toList());
@@ -46,7 +43,7 @@ public class Datamart {
     }
 
     private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Radio de la Tierra en km
+        final int R = 6371;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a =

@@ -25,7 +25,6 @@ public class TicketmasterController {
     }
 
     public int fetchSaveAndPublish(String city, LocalDate localDate) {
-        // Configurar Gson con los adaptadores para Instant y LocalDate
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
                 .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
