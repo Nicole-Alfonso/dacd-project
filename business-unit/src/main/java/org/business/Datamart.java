@@ -15,9 +15,6 @@ public class Datamart {
 
     public boolean addEvent(EventInfo event) {
         boolean agregado = eventos.add(event);
-        if (!agregado) {
-            System.out.println("Evento duplicado ignorado: " + event);
-        }
         return agregado;
     }
 
@@ -38,12 +35,25 @@ public class Datamart {
                 .filter(h -> filtro.getCategoria() == null || h.getCategory().equalsIgnoreCase(filtro.getCategoria()))
                 .filter(h -> filtro.getPrecioMax() <= 0 || h.getMaxPrice() <= filtro.getPrecioMax())
                 .filter(h -> filtro.getMinRating() <= 0 || h.getRating() >= filtro.getMinRating())
-                .filter(h -> filtro.getDistanciaMaxKm() <= 0 || calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento) <= filtro.getDistanciaMaxKm())
+                .filter(h -> {
+                    if (filtro.getDistanciaMaxKm() <= 0) {
+                        return true;
+                    }
+                    // Validar lat/lon válidos para evento y hotel
+                    boolean eventoTieneCoordenadas = latEvento != 0.0 && lonEvento != 0.0;
+                    boolean hotelTieneCoordenadas = h.getLat() != 0.0 && h.getLon() != 0.0;
+                    if (!eventoTieneCoordenadas || !hotelTieneCoordenadas) {
+                        // No se puede calcular distancia, no aplicar filtro distancia
+                        return true;
+                    }
+                    double distancia = calcularDistanciaKm(h.getLat(), h.getLon(), latEvento, lonEvento);
+                    return distancia <= filtro.getDistanciaMaxKm();
+                })
                 .collect(Collectors.toList());
     }
 
     private double calcularDistanciaKm(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
+        final int R = 6371; // Radio de la Tierra en km
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a =

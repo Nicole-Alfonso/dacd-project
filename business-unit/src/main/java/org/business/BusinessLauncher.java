@@ -24,7 +24,6 @@ public class BusinessLauncher {
             LocalDate checkIn = LocalDate.parse(args[2]);
             LocalDate checkOut = LocalDate.parse(args[3]);
 
-            // Validación de orden lógico de fechas
             if (!checkIn.isBefore(checkOut)) {
                 System.err.println("Error: La fecha de check-in debe ser anterior a la de check-out.");
                 return;
