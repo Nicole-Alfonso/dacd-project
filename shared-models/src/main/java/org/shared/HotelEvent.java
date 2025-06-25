@@ -42,7 +42,6 @@ public class HotelEvent {
         this.checkOut = checkOut;
     }
 
-    // Getters
     public Instant getTs() { return ts; }
     public String getSs() { return ss; }
     public String getId() { return id; }

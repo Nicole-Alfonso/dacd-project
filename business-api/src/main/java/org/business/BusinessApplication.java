@@ -1,11 +1,11 @@
-package org.api;
+package org.business;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BusinessApiApplication {
+public class BusinessApplication {
     public static void main(String[] args) {
-        SpringApplication.run(BusinessApiApplication.class, args);
+        SpringApplication.run(BusinessApplication.class, args);
     }
 }

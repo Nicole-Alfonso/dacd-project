@@ -17,7 +17,7 @@ public class EventInfo {
 
     public EventInfo(Instant ts, String ss, String id, String name, String city,
                      LocalDate localDate, String url, double lat, double lon) {
-        this.ts = ts;  // Usamos el timestamp que llega, no Instant.now()
+        this.ts = ts;
         this.ss = ss;
         this.id = id;
         this.name = name;
@@ -44,7 +44,6 @@ public class EventInfo {
         return name + " @ " + city + " on " + localDate + " | " + url;
     }
 
-    // equals y hashCode para evitar duplicados basados en nombre, ciudad y fecha
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Resultados de Hoteles</title>
+</head>
+<body>
+<h1>Hoteles Disponibles</h1>
+<p th:text="'Total de hoteles encontrados: ' + ${total}"></p>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Ciudad</th>
+        <th>Categoría</th>
+        <th>Precio Máximo</th>
+        <th>Rating</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
+        <th>URL</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="hotel : ${hoteles}">
+        <td th:text="${hotel.name}"></td>
+        <td th:text="${hotel.city}"></td>
+        <td th:text="${hotel.category}"></td>
+        <td th:text="${hotel.maxPrice}"></td>
+        <td th:text="${hotel.rating}"></td>
+        <td th:text="${hotel.checkIn}"></td>
+        <td th:text="${hotel.checkOut}"></td>
+        <td><a th:href="${hotel.url}" target="_blank" th:text="${hotel.url}">Link</a></td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
+<a href="/">Volver a buscar</a>
+</body>
+</html>

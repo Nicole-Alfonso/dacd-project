@@ -1,10 +1,10 @@
 package org.shared;
 
 public class HotelFilter {
-    private String categoria;             // null = no filtrar por categoría
-    private double precioMax;             // Double.MAX_VALUE = no filtrar por precio
-    private double minRating;             // 0 = no filtrar por rating
-    private double distanciaMaxKm;        // Double.MAX_VALUE = no filtrar por distancia
+    private String categoria;
+    private double precioMax;
+    private double minRating;
+    private double distanciaMaxKm;
 
     public HotelFilter(String categoria, Double precioMax, Double minRating, Double distanciaMaxKm) {
         this.categoria = categoria;
