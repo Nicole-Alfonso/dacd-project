@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InstantTypeAdapterTest {
 
     @Test
-    void testInstantSerializationDeserialization() {
+    public void testSerializationDeserialization() {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
                 .create();
 
         Instant now = Instant.now();
-        String json = gson.toJson(now, Instant.class);
-
+        String json = gson.toJson(now);
         Instant parsed = gson.fromJson(json, Instant.class);
+
         assertEquals(now.toString(), parsed.toString());
     }
 }

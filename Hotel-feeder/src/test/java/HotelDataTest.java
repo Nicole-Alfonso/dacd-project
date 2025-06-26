@@ -1,3 +1,4 @@
+
 import org.feeder.model.HotelData;
 import org.junit.jupiter.api.Test;
 import org.shared.PriceOffer;
@@ -8,29 +9,42 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HotelDataTest {
+public class HotelDataTest {
 
     @Test
-    void shouldAssignCorrectPriceCategory() {
-        List<PriceOffer> low = List.of(new PriceOffer("X", 50, "EUR"));
-        List<PriceOffer> medium = List.of(new PriceOffer("X", 100, "EUR"));
-        List<PriceOffer> high = List.of(new PriceOffer("X", 200, "EUR"));
-
-        assertEquals(HotelData.PriceCategory.LOW, new HotelData("1", "City", "Low", 4.5, 1, 1, low, Instant.now(), "", LocalDate.now(), LocalDate.now()).getCategory());
-        assertEquals(HotelData.PriceCategory.MEDIUM, new HotelData("2", "City", "Med", 4.5, 1, 1, medium, Instant.now(), "", LocalDate.now(), LocalDate.now()).getCategory());
-        assertEquals(HotelData.PriceCategory.HIGH, new HotelData("3", "City", "High", 4.5, 1, 1, high, Instant.now(), "", LocalDate.now(), LocalDate.now()).getCategory());
+    public void testPriceCategoryLow() {
+        List<PriceOffer> offers = List.of(new PriceOffer("Provider", 50.0, "USD"));
+        HotelData data = createHotel(offers);
+        assertEquals(HotelData.PriceCategory.LOW, data.getCategory());
     }
 
     @Test
-    void shouldCalculateMinAndMaxPrice() {
-        List<PriceOffer> offers = List.of(
-                new PriceOffer("A", 80, "EUR"),
-                new PriceOffer("B", 120, "EUR"),
-                new PriceOffer("C", 100, "EUR")
-        );
-        HotelData hotel = new HotelData("1", "Test", "City", 4.2, 0, 0, offers, Instant.now(), "", LocalDate.now(), LocalDate.now());
+    public void testPriceCategoryMedium() {
+        List<PriceOffer> offers = List.of(new PriceOffer("Provider", 100.0, "USD"));
+        HotelData data = createHotel(offers);
+        assertEquals(HotelData.PriceCategory.MEDIUM, data.getCategory());
+    }
 
-        assertEquals(80, hotel.getMinPrice());
-        assertEquals(120, hotel.getMaxPrice());
+    @Test
+    public void testPriceCategoryHigh() {
+        List<PriceOffer> offers = List.of(new PriceOffer("Provider", 200.0, "USD"));
+        HotelData data = createHotel(offers);
+        assertEquals(HotelData.PriceCategory.HIGH, data.getCategory());
+    }
+
+    @Test
+    public void testMinAndMaxPriceCalculation() {
+        List<PriceOffer> offers = List.of(
+                new PriceOffer("Provider1", 80.0, "USD"),
+                new PriceOffer("Provider2", 120.0, "USD")
+        );
+        HotelData data = createHotel(offers);
+        assertEquals(80.0, data.getMinPrice());
+        assertEquals(120.0, data.getMaxPrice());
+    }
+
+    private HotelData createHotel(List<PriceOffer> offers) {
+        return new HotelData("1", "City", "Hotel", 4.2, 10.0, 20.0, offers,
+                Instant.now(), "http://example.com", LocalDate.now(), LocalDate.now().plusDays(1));
     }
 }
