@@ -82,7 +82,7 @@ Includes classes and packages like:
 **TicketmasterProvider:** Fetches event data from the Ticketmaster API and converts it into Event objects. <br>
 **EventSqliteStore:** Stores event data in a local SQLite database.
 
-![Class diagram](Event-feeder.png)
+![event-feeder.jpeg](event-feeder.jpeg)
 
 ### **Hotel-Feeder Module:** <br>
 Retrieves hotel and pricing data from the Xotelo API. Publishes this data to the hotel.Hotel topic on ActiveMQ. <br>
@@ -98,7 +98,7 @@ Includes classes and packages like:
 **XoteloProvider:** Implements HotelProvider, fetching hotel and price data from the Xotelo API. <br>
 **HotelSqliteStore:** Implements HotelStore, managing local SQLite storage for hotel and offer data.
 
-![Class diagram](Hotel-feeder.png)
+![hotel-feeder.jpeg](hotel-feeder.jpeg)
 
 
 ### **Event-Store-Builder Module:** <br>
@@ -115,7 +115,7 @@ It has the following structure:
 **EventWriter:** Defines the contract for writing events to persistent storage.
 
   
-![Class diagram](event-store-builder.png)
+![event-store-builder.jpeg](event-store-builder.jpeg)
 
 
 ### **Business-Unit Module:** <br> 
