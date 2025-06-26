@@ -155,23 +155,27 @@ Structure of Shared-Model module:
 > Packages are not included on the class diagrams.
 ---
 ### How to run the program
-Run BuilderLauncher
-![Running](Im3.jpg)
+To run the Java project, the IntelliJ IDEA development environment was used. Below are the steps required to run the program from this IDE:
 
-Run Hotel-feeder Main with citykey in arguments and the app suggests to enter dates to call offers
-![Running](Im4.jpg)
+1. Open the project in IntelliJ IDEA
+Launch IntelliJ IDEA and select the "Open" option. Then, navigate to the project's root folder and open it. IntelliJ will automatically recognize the project structure and begin indexing the files.
+   (foto)
 
-Run Hotel-feeder Main with citykey and dates in arguments
-![Running](Im5.jpg)
+2. Run BuilderLauncher
+   Before running this class, you need to ensure the ActiveMQ broker is up and running at tcp://localhost:61616. Then, from IntelliJ, run the BuilderLauncher class located in the event-store-builder module. This class connects to the broker and durably subscribes to the "HotelPrice" and "TicketmasterEvents" topics. It is used to receive and save events sent by the feeders, writing them to flat files organized by date using FileEventWriter.
+   (fotos)
 
-Run BuisnessLauncher, if no enough arguments given
-![Running](im2.jpg)
+3. Running the feeders
+   From IntelliJ, run the main method of the hotel-feeder and events-feeder modules. When started, each feeder queries its corresponding API, saves the data to the database, and publishes the events to the ActiveMQ broker, where they will be received by the BuilderLauncher. Additionally, each feeder has a scheduler that keeps the process active, automatically making new queries to the API every hour to keep the data up to date.
+   (fotos)
 
-Run BuisnessLauncher with correct arguments
-![Running](im1.jpg)
+4. Run BusinessLauncher
+   Finally, run the BusinessLauncher class, which acts as the entry point for the system's business logic. This class loads historical data from files, initializes the in-memory datamart, and connects to the ActiveMQ broker to receive real-time updates. Using the input parameters, it allows you to query hotels related to events by applying various filters such as date, price, category, rating, or distance.
+   (fotos)
 
-Run ApiApplicationLauncher. Web page runs on port 8080 (http://localhost:8080)
-![Running](Im6.jpg)
+5. Run business-api
+   You can also run the business-api module, which creates a web interface using Spring Boot. Running the BusinessApplication class starts a server with endpoints to search for hotels related to events. This is an accessible way for users or REST clients to interact with the business logic.
+   (fotos)
 
 ---
 ## 5. Resources
