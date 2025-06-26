@@ -43,14 +43,15 @@ The system:
 
 The Datamart in the Business Unit module acts as a in-memory data store for events and hotels, providing efficient data retrieval and filtering for real-time and historical analytics. It has two main components: <br>
 1. Data Structures
-- `hotelesPorCiudad (Map<String, Map<String, HotelEvent>)` - Stores hotels grouped by city, allowing efficient city-based hotel lookups.
-- `eventos (List<EventInfo>)` - Stores all known events for fast retrieval and search by name.
+- `hotelEvents (List<HotelEvent>)` - Stores hotels grouped by city, allowing efficient city-based hotel lookups.
+- `eventos (set<EventInfo>)` - Stores all known events for fast retrieval and search by name.
+- `hoteless (List<HotelEvent>)` - Stores all known hotels for fast retrieval and search by name.
 
 2. Main Methods
-- `addEvent(HotelEvent)` - Adds a hotel event to the city-specific map.
+- `addHotel(HotelEvent)` - Adds a hotel event to the city-specific map.
 - `addEvent(EventInfo)` - Adds a general event to the event list.
 - `getEventos()` - Returns the list of all known events.
-- `findEventoByNombre(String name)` - Finds an event by name.
+- `getEventosPorNombreYCiudad(String name)` - Finds an event by name and city.
 - `getHotelesFiltrados(String ciudad, double eventoLat, double eventoLon, FiltroHotel filtro)` - Gets hotels filtered by city, price, category, rating, and distance.
 
 ---
@@ -155,27 +156,81 @@ Structure of Shared-Model module:
 > Packages are not included on the class diagrams.
 ---
 ### How to run the program
-To run the Java project, the IntelliJ IDEA development environment was used. Below are the steps required to run the program from this IDE:
+This project is developed in Java using IntelliJ IDEA as the development environment. Below are the steps to run the application from the IDE.
 
-1. Open the project in IntelliJ IDEA
+1️⃣ **Open the project in IntelliJ IDEA.**
 Launch IntelliJ IDEA and select the "Open" option. Then, navigate to the project's root folder and open it. IntelliJ will automatically recognize the project structure and begin indexing the files.
-   (foto)
 
-2. Run BuilderLauncher
-   Before running this class, you need to ensure the ActiveMQ broker is up and running at tcp://localhost:61616. Then, from IntelliJ, run the BuilderLauncher class located in the event-store-builder module. This class connects to the broker and durably subscribes to the "HotelPrice" and "TicketmasterEvents" topics. It is used to receive and save events sent by the feeders, writing them to flat files organized by date using FileEventWriter.
-   (fotos)
 
-3. Running the feeders
-   From IntelliJ, run the main method of the hotel-feeder and events-feeder modules. When started, each feeder queries its corresponding API, saves the data to the database, and publishes the events to the ActiveMQ broker, where they will be received by the BuilderLauncher. Additionally, each feeder has a scheduler that keeps the process active, automatically making new queries to the API every hour to keep the data up to date.
-   (fotos)
+2️⃣ **Run BuilderLauncher.**
+Before running this class, you need to ensure the ActiveMQ broker is up and running at tcp://localhost:61616. Then, from IntelliJ, run the BuilderLauncher class located in the event-store-builder module. This class connects to the broker and durably subscribes to the "HotelPrice" and "TicketmasterEvents" topics. It is used to receive and save events sent by the feeders, writing them to flat files organized by date using FileEventWriter.
 
-4. Run BusinessLauncher
-   Finally, run the BusinessLauncher class, which acts as the entry point for the system's business logic. This class loads historical data from files, initializes the in-memory datamart, and connects to the ActiveMQ broker to receive real-time updates. Using the input parameters, it allows you to query hotels related to events by applying various filters such as date, price, category, rating, or distance.
-   (fotos)
+<img src="run2.PNG" width="425"/>  <img src="run3.PNG" width="550"/>
 
-5. Run business-api
-   You can also run the business-api module, which creates a web interface using Spring Boot. Running the BusinessApplication class starts a server with endpoints to search for hotels related to events. This is an accessible way for users or REST clients to interact with the business logic.
-   (fotos)
+*Figure 1.1. ActiveMQ running on port 6161*
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Figure 1.2. Module Builder Launcher running*
+
+3️⃣ **Run the Feeders.**
+From IntelliJ, run the main method of the hotel-feeder and events-feeder modules. When started, each feeder queries its corresponding API, saves the data to the database, and publishes the events to the ActiveMQ broker, where they will be received by the BuilderLauncher. Additionally, each feeder has a scheduler that keeps the process active, automatically making new queries to the API every hour to keep the data up to date.
+
+<img src="run4.PNG" width="800"/>
+
+*Figure 2.1. Hotels feeder active*
+
+<img src="run5.PNG" width="1000"/>
+
+*Figure 2.2. Stored hotel events example*
+
+<img src="run6.PNG" width="475"/> <img src="run7.PNG" width="500"/>
+
+*Figure 2.3/4. Sql tables with stored hotels*
+
+<img src="run8.PNG" width="800"/> 
+
+*Figure 2.5. Events feeder started*
+
+<img src="run9.PNG" width="1000"/>
+
+*Figure 2.6. Stored event events example*
+
+<img src="run10.PNG" width="800"/> 
+
+*Figure 2.7. Sql tables with stored events*
+
+4️⃣ **Run BusinessLauncher.**
+Finally, run the BusinessLauncher class, which acts as the entry point for the system's business logic. This class loads historical data from files, initializes the in-memory datamart, and connects to the ActiveMQ broker to receive real-time updates. Using the input parameters, it allows you to query hotels related to events by applying various filters such as date, price, category, rating, or distance.
+
+<img src="run11.PNG" width="500"/> 
+
+*Figure 3.1. Parameters examples used to start the Business Unit*
+
+<img src="run12.PNG" width="800"/>
+
+*Figure 3.2. Business Unit Answer example*
+
+
+5️⃣ **Run business-api.**
+You can also run the business-api module, which creates a web interface using Spring Boot. Running the BusinessApplication class starts a server with endpoints to search for hotels related to events. This is an accessible way for users or REST clients to interact with the business logic. To use the visual environment search for localhost:8080 on the browser.
+
+<img src="run13.PNG" width="800"/> 
+
+*Figure 4.1. Business Api running*
+
+<img src="run14.PNG" width="800"/>
+
+*Figure 4.2. Web interface on localhost:8080*
+
+<img src="run15.PNG" width="800"/> 
+
+*Figure 4.3. Graphical answer example, using only mandatory filters*
+
+<img src="run16.PNG" width="400"/>
+
+*Figure 4.4. Optional filter example*
+
+<img src="run17.PNG" width="800"/>
+
+*Figure 4.5. Graphical answer example, using optional filters*
 
 ---
 ## 5. Resources
@@ -267,15 +322,42 @@ ActiveMQ - Client library to interact with Apache ActiveMQ message broker.
 </dependency>
 ```
 
+jakarta.annotation:jakarta.annotation-api - Provides standard Jakarta annotations required for compatibility with frameworks like Spring.
+```
+<dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.0</version>
+</dependency>
+```
+
+spring-boot-starter-web - Includes everything needed to build web applications with Spring Boot, including REST controllers and an embedded server.
+```
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.2.5</version>
+</dependency>
+```
+
+spring-boot-starter-thymeleaf - Enables support for the Thymeleaf template engine, used to generate dynamic HTML views.
+```
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>3.3.4</version>
+</dependency>
+```
+
 ---
 ## 6. Future improvements
 Some future improvements for this Hotel Recommender project could be: 
 
-1. Enhanced Error Handling and Logging:<br>
+1. **Enhanced Error Handling and Logging:**
 Implement more robust error handling mechanisms and comprehensive logging to improve the reliability and the debugging.
 
-2. Integration with Additional APIs:<br>
+2. **Integration with Additional APIs:**
 Expand the system's capabilities integrating other relevant APIs to provide a broader range of data.
 
-3. User Interface Development:<br>
-Develop a user-friendly interface to enhance user experience and accessibility.
+3. **User Interface Development:**
+   Optimize the user interface through a visual redesign, the addition of new features, and improved error handling for greater stability.
