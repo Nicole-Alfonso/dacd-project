@@ -37,9 +37,9 @@ public class HotelViewController {
             @RequestParam(name = "checkIn") String checkIn,
             @RequestParam(name = "checkOut") String checkOut,
             @RequestParam(name = "categoria", required = false) String categoria,
-            @RequestParam(name = "precioMax", required = false, defaultValue = "999999") double precioMax,
-            @RequestParam(name = "minRating", required = false, defaultValue = "0.0") double minRating,
-            @RequestParam(name = "distanciaMaxKm", required = false, defaultValue = "999999") double distanciaMaxKm,
+            @RequestParam(name = "precioMax", required = false) Double precioMax,
+            @RequestParam(name = "minRating", required = false) Double minRating,
+            @RequestParam(name = "distanciaMaxKm", required = false) Double distanciaMaxKm,
             Model model) {
 
         // Normalizar categoría para que filtro entienda que no hay filtro si está vacía o null
@@ -47,7 +47,17 @@ public class HotelViewController {
             categoria = null;
         }
 
-        // Construir filtro con valores reales recibidos
+        // Si no vienen valores, poner defaults (0.0 indica sin filtro en ese criterio)
+        if (precioMax == null || precioMax <= 0) {
+            precioMax = 0.0;
+        }
+        if (minRating == null || minRating <= 0) {
+            minRating = 0.0;
+        }
+        if (distanciaMaxKm == null || distanciaMaxKm <= 0) {
+            distanciaMaxKm = 0.0;
+        }
+
         HotelFilter filtro = new HotelFilter(categoria, precioMax, minRating, distanciaMaxKm);
 
         LocalDate in = LocalDate.parse(checkIn);
