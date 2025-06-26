@@ -233,7 +233,22 @@ You can also run the business-api module, which creates a web interface using Sp
 *Figure 4.5. Graphical answer example, using optional filters*
 
 ---
-## 5. Resources
+## 7. Architecture and Patterns Used
+
+The project applies several recognized design principles and patterns, aiming to achieve a modular, maintainable, and easily testable solution:
+
+**Clean Architecture:** A layered structure was adopted to completely decouple business logic (such as BusinessUnit and HotelEvent) from the infrastructure (CsvFeeder, JsonFeeder) and the interface (HotelViewController, DTOs). This makes it easy to scale or modify components without affecting the core of the system.
+
+**Event Sourcing:** All system information is modeled as immutable events. Feeders generate these events, which are then stored and processed to reconstruct the state in memory (Datamart). This enables traceability, auditing, and replay of historical state.
+
+**Builder Pattern:** Used to build complex objects such as HotelEvent, allowing for clearer, safer, and error-free creation, especially when there are multiple optional fields.
+
+**Collection Pipeline:** Java Streams is used extensively to apply chained filters to collections (e.g., hotels related to events). This allows for clean, declarative, and extensible code.
+
+These patterns were chosen for their suitability to the problem, and together they contribute to a robust, flexible, and evolution-oriented architecture for the system.
+
+---
+## 6. Resources
 
 The project was developed using IntelliJ IDEA, a powerful and highly integrated IDE widely adopted in the software industry. It provides seamless integration with various tools and technologies, streamlining the development process. For version control, Git was used to meticulously track source code changes, while GitHub served as the cloud-based repository for hosting the project's codebase.
 
@@ -350,7 +365,7 @@ spring-boot-starter-thymeleaf - Enables support for the Thymeleaf template engin
 ```
 
 ---
-## 6. Future improvements
+## 7. Future improvements
 Some future improvements for this Hotel Recommender project could be: 
 
 1. **Enhanced Error Handling and Logging:**
