@@ -133,11 +133,11 @@ The structure of this module is:
 Serves as the RESTful interface for the project, allowing external clients to query hotel data based on event preferences. It exposes HTTP endpoints for filtering and retrieving hotel recommendations, bridging the gap between the core business logic in the Business Unit and user-facing applications. <br>
 Structure of this module: 
 
-- **BusinessApiApplication:** Main entry point for the Spring Boot application, initializes the web server. <br>
+- **BusinessApplication:** Main entry point for the Spring Boot application, initializes the web server. <br>
 - *controller:* <br>
-**HotelController:** Exposes REST endpoints to search for hotels near events using filters. <br>
+**HotelViewController:** Exposes REST endpoints to search for hotels near events using filters. <br>
 - *dto:* <br>
-**HotelFilterRequest:** Data transfer object for hotel filter parameters.
+**HotelDTO:** Data transfer object for hotel filter parameters.
 
   
 ### **Shared-Model Module:** <br>
