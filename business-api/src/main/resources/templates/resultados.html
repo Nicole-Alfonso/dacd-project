@@ -2,39 +2,124 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Resultados de Hoteles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('/fondo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+        }
+
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.6);
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        p {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #444;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .hotel-link-btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background-color: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .hotel-link-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 16px;
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<h1>Hoteles Disponibles</h1>
-<p th:text="'Total de hoteles encontrados: ' + ${total}"></p>
+<div class="overlay">
+    <h1>Hoteles Disponibles</h1>
+    <p th:text="'Total de hoteles encontrados: ' + ${total}"></p>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Nombre</th>
-        <th>Ciudad</th>
-        <th>Categoría</th>
-        <th>Precio Máximo</th>
-        <th>Rating</th>
-        <th>Check-In</th>
-        <th>Check-Out</th>
-        <th>URL</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="hotel : ${hoteles}">
-        <td th:text="${hotel.name}"></td>
-        <td th:text="${hotel.city}"></td>
-        <td th:text="${hotel.category}"></td>
-        <td th:text="${hotel.maxPrice}"></td>
-        <td th:text="${hotel.rating}"></td>
-        <td th:text="${hotel.checkIn}"></td>
-        <td th:text="${hotel.checkOut}"></td>
-        <td><a th:href="${hotel.url}" target="_blank" th:text="${hotel.url}">Link</a></td>
-    </tr>
-    </tbody>
-</table>
+    <table>
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Ciudad</th>
+            <th>Categoria</th>
+            <th>Precio Maximo</th>
+            <th>Rating</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Enlace</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="hotel : ${hoteles}">
+            <td th:text="${hotel.name}"></td>
+            <td th:text="${hotel.city}"></td>
+            <td th:text="${hotel.category}"></td>
+            <td th:text="${hotel.maxPrice}"></td>
+            <td th:text="${hotel.rating}"></td>
+            <td th:text="${hotel.checkIn}"></td>
+            <td th:text="${hotel.checkOut}"></td>
+            <td>
+                <a th:href="${hotel.url}" target="_blank" class="hotel-link-btn">Enlace al hotel</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-<br/>
-<a href="/">Volver a buscar</a>
+    <a href="/" class="back-link">Volver a buscar</a>
+</div>
 </body>
 </html>
+
